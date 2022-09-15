@@ -12,7 +12,7 @@ public struct Track {
     public let webUrl: String
     public let iconUrl: String
     public let tags: [String]
-    public let lastTouchedAt: Date
+    public let lastTouchedAt: Date?
     public let isNew: Bool
     public let links: ResultLink
     public let isJoined: Bool
@@ -31,7 +31,7 @@ public struct Track {
         webUrl = try container.decode(String.self, forKey: .webUrl)
         iconUrl = try container.decode(String.self, forKey: .iconUrl)
         tags = try container.decode(Array.self, forKey: .tags)
-        lastTouchedAt = try container.decode(Date.self, forKey: .lastTouchedAt)
+        lastTouchedAt = try? container.decode(Date.self, forKey: .lastTouchedAt)
         isNew = try container.decode(Bool.self, forKey: .isNew)
         links = try container.decode(ResultLink.self, forKey: .links)
         isJoined = try container.decodeIfPresent(Bool.self, forKey: .isJoined) ?? false
@@ -61,11 +61,3 @@ extension Track: Decodable {
         case hasNotifications = "has_notifications"
     }
 }
-
-//public struct UserDataForTrack {
-//    public let isJoined: Bool
-//    public let numLearntConcepts: Int
-//    public let numCompletedExercises: Int
-//    public let numSolutions: Int
-//    public let hasNotifications: Bool
-//}
