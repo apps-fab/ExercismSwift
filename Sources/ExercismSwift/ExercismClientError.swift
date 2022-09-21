@@ -2,7 +2,7 @@ import Foundation
 
 public enum ExercismClientError: Error {
     case genericError(Error)
-    case apiError(status: Int, code: String, message: String)
+    case apiError(code: ExercismErrorCode, type: String, message: String)
     case bodyEncodingError(Error)
     case decodingError(Error)
     case unsupportedResponseError
@@ -15,4 +15,6 @@ public enum ExercismErrorCode: String {
     case invalidRequest = "invalid_request"
     case validationError = "validation_error"
     case unauthorized = "unauthorized"
+    case invalidToken = "invalid_auth_token"
+    case genericError
 }

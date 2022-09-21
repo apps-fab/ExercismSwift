@@ -9,5 +9,8 @@ public protocol ExercismClientType: AnyObject {
                    completed: @escaping (Result<ListResponse<Exercise>, ExercismClientError>) -> Void
     )
 
+    func validateToken(
+            completed: @escaping (Result<ValidateTokenResponse, ExercismClientError>) -> Void
+    )
 
 }

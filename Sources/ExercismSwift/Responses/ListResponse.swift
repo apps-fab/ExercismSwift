@@ -9,14 +9,14 @@ public struct ListResponse<T> : Decodable where T: Decodable{
     }
 }
 
-struct DynamicKey: CodingKey {
-    var stringValue: String
-    init?(stringValue: String) {
+public struct DynamicKey: CodingKey {
+    public var stringValue: String
+    public init?(stringValue: String) {
         self.stringValue = stringValue
     }
 
-    var intValue: Int?
-    init?(intValue: Int) {
+    public var intValue: Int?
+    public init?(intValue: Int) {
         nil
     }
 
