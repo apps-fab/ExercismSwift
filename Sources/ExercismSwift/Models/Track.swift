@@ -42,7 +42,7 @@ public struct Track {
     }
 }
 
-extension Track: Decodable {
+extension Track: Decodable, Hashable {
     enum CodingKeys: String, CodingKey {
         case slug
         case title

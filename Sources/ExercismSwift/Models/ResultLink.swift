@@ -17,7 +17,7 @@ public struct ResultLink {
     }
 }
 
-extension ResultLink: Decodable {
+extension ResultLink: Decodable, Hashable {
     enum CodingKeys: String, CodingKey {
         case `self`
         case exercises
