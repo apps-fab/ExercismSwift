@@ -7,7 +7,7 @@ extension ExercismClient {
         completed: @escaping (Result<ListResponse<Exercise>, ExercismClientError>) -> Void
     ) {
         networkClient.get(
-            urlBuilder.url(path: "/v2/tracks/\(track)/exercises"),
+            urlBuilder.url(endpoint: ExercismClientPath.exercises, params: [:], urlArgs: track),
             headers: headers(),
             completed: completed
         )
