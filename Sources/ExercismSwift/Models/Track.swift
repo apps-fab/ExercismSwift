@@ -8,6 +8,7 @@ public struct Track {
     public let slug: String
     public let title: String
     public let course: Bool
+    public let numExercises: Int
     public let numConcepts: Int
     public let webUrl: String
     public let iconUrl: String
@@ -27,7 +28,8 @@ public struct Track {
         slug = try container.decode(String.self, forKey: .slug)
         title = try container.decode(String.self, forKey: .title)
         course = try container.decode(Bool.self, forKey: .course)
-        numConcepts = try container.decode(Int.self, forKey: .numConcepts)
+        numExercises = try container.decode(Int.self, forKey: .numConcepts)
+        numConcepts = try container.decode(Int.self, forKey: .numExercises)
         webUrl = try container.decode(String.self, forKey: .webUrl)
         iconUrl = try container.decode(String.self, forKey: .iconUrl)
         tags = try container.decode(Array.self, forKey: .tags)
@@ -42,11 +44,16 @@ public struct Track {
     }
 }
 
-extension Track: Decodable, Hashable {
+extension Track: Decodable, Hashable, Identifiable {
+    public var id: String {
+        slug
+    }
+
     enum CodingKeys: String, CodingKey {
         case slug
         case title
         case course
+        case numExercises = "num_exercises"
         case numConcepts = "num_concepts"
         case webUrl = "web_url"
         case iconUrl = "icon_url"
