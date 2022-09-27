@@ -4,7 +4,7 @@ public class URLBuilder {
     let base: URL
 
     init() {
-        self.base = Network.exercismBaseURL
+        base = Network.exercismBaseURL
     }
 
     public func url<T>(

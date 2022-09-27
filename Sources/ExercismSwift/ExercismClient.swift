@@ -9,26 +9,19 @@ public final class ExercismClient: ExercismClientType {
 
     public init(
             apiToken: String,
-            networkClient: NetworkClient = DefaultNetworkClient()
+            networkClient: NetworkClient? = nil
     ) {
         self.apiToken = apiToken
-        self.networkClient = networkClient
+        self.networkClient = networkClient ?? DefaultNetworkClient(apiToken)
     }
 
     public init(
-            networkClient: NetworkClient = DefaultNetworkClient()
+            networkClient: NetworkClient? = nil
     ) {
-        self.networkClient = networkClient
+        self.networkClient = networkClient ?? DefaultNetworkClient(apiToken)
     }
 
     func headers() -> Network.HTTPHeaders {
-        var headers = [
-            "User-Agent": userAgent,
-        ]
-        if let apiToken = apiToken {
-            headers["Authorization"] = "Bearer \(apiToken)"
-        }
-
-        return headers
+        [:]
     }
 }

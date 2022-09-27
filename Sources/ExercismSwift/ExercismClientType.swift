@@ -13,4 +13,18 @@ public protocol ExercismClientType: AnyObject {
             completed: @escaping (Result<ValidateTokenResponse, ExercismClientError>) -> Void
     )
 
+    func solutions(
+            for track: String?,
+            withStatus status: SolutionStatus?,
+            mentoringStatus: MentoringStatus?,
+            completed: @escaping (Result<ListResponse<Solution>, ExercismClientError>) -> Void
+    )
+
+    func downloadSolution(
+            with id: String,
+            for track: String?,
+            exercise: String?,
+        completed: @escaping (Result<SolutionFile, ExercismClientError>) -> Void
+    )
+
 }

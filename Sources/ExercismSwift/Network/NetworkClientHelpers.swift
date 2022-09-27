@@ -28,4 +28,21 @@ public enum NetworkClientHelpers {
 
         return nil
     }
+
+    public static func extractError(response: URLResponse?, error: Error?) -> ExercismClientError? {
+        if let error = error {
+            return .genericError(error)
+        }
+
+        guard let response = response as? HTTPURLResponse else {
+            return .unsupportedResponseError
+        }
+
+        if (400..<503).contains(response.statusCode) {
+            return .genericError(Network.Errors.HTTPError(code: response.statusCode))
+        }
+
+        return nil
+
+    }
 }
