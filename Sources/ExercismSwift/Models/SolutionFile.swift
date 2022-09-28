@@ -33,8 +33,8 @@ public struct SolutionFile {
         fileDownloadBaseUrl = try solutionContainer.decode(String.self, forKey: .fileDownloadBaseUrl)
         files = try solutionContainer.decode([String].self, forKey: .files)
         exercise = try solutionContainer.decode(SolutionExercise.self, forKey: .exercise)
-        let submissionContainer = try solutionContainer.nestedContainer(keyedBy: SubmissionKeys.self, forKey: .submission)
-        submittedAt = try? submissionContainer.decode(Date.self, forKey: .submittedAt)
+        let submissionContainer = try? solutionContainer.nestedContainer(keyedBy: SubmissionKeys.self, forKey: .submission)
+        submittedAt = try? submissionContainer?.decode(Date.self, forKey: .submittedAt)
     }
 }
 

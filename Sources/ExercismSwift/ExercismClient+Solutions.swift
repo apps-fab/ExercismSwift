@@ -4,10 +4,10 @@ import Foundation
 
 extension ExercismClient {
     public func solutions(
-            for track: String? = nil,
-            withStatus status: SolutionStatus? = nil,
-            mentoringStatus: MentoringStatus? = nil,
-            completed: @escaping (Result<ListResponse<Solution>, ExercismClientError>) -> Void
+        for track: String? = nil,
+        withStatus status: SolutionStatus? = nil,
+        mentoringStatus: MentoringStatus? = nil,
+        completed: @escaping (Result<ListResponse<Solution>, ExercismClientError>) -> Void
     ) {
         var params: [String: String] = [:]
         if let t = track {
@@ -23,17 +23,17 @@ extension ExercismClient {
         }
 
         networkClient.get(
-                urlBuilder.url(path: "/v2/solutions", params: params),
-                headers: headers(),
-                completed: completed
+            urlBuilder.url(path: .solutions, params: params),
+            headers: headers(),
+            completed: completed
         )
     }
 
     public func downloadSolution(
-            with id: String = "latest",
-            for track: String? = nil,
-            exercise: String? = nil,
-            completed: @escaping (Result<SolutionFile, ExercismClientError>) -> Void
+        with id: String = "latest",
+        for track: String? = nil,
+        exercise: String? = nil,
+        completed: @escaping (Result<SolutionFile, ExercismClientError>) -> Void
     ) {
         var params: [String: String] = [:]
 
@@ -46,8 +46,8 @@ extension ExercismClient {
         }
 
         networkClient.get(
-                urlBuilder.url(path: "/v1/solutions/\(id)", params: params),
-                headers: headers()
+            urlBuilder.url(path: .solutionsFile, params: params),
+            headers: headers()
         ) { (result: Result<SolutionFile, ExercismClientError>) in
             switch result {
 
