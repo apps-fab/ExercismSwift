@@ -7,7 +7,7 @@ extension ExercismClient {
         completed: @escaping (Result<ValidateTokenResponse, ExercismClientError>) -> Void
     ) {
         networkClient.get(
-            urlBuilder.url(path: "/v2/validate_token"),
+            urlBuilder.url(endpoint: ExercismClientPath.validateToken),
             headers: headers(),
             completed: completed
         )

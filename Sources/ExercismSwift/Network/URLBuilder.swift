@@ -8,22 +8,24 @@ public class URLBuilder {
     }
 
     public func url<T>(
-        path: String,
+        endpoint: ExercismClientPath,
         identifier: EntityIdentifier<T, String>,
         params: [String: String] = [:]
     ) -> URL {
-        let newPath = path.replacingOccurrences(of: "{identifier}", with: identifier.rawValue)
+        let newPath = endpoint.rawValue.replacingOccurrences(of: "{identifier}", with: identifier.rawValue)
         guard let url = URL(string: newPath, relativeTo: base) else {
-            fatalError("Invalid path, unable to create a URL: \(path)")
+            fatalError("Invalid path, unable to create a URL: \(endpoint)")
         }
 
         return buildURL(url: url, params: params)
     }
 
     public func url(
-        path: String,
-        params: [String: String] = [:]
+        endpoint: ExercismClientPath,
+        params: [String: String] = [:],
+        urlArgs: CVarArg...
     ) -> URL {
+        let path = String(format: endpoint.rawValue, arguments: urlArgs)
         guard let url = URL(string: path, relativeTo: base) else {
             fatalError("Invalid path, unable to create a URL: \(path)")
         }
