@@ -8,9 +8,9 @@ public class URLBuilder {
     }
 
     public func url<T>(
-        path: ExercismClientPath,
-        identifier: EntityIdentifier<T, String>,
-        params: [String: String] = [:]
+            path: ExercismClientPath,
+            identifier: EntityIdentifier<T, String>,
+            params: [String: String] = [:]
     ) -> URL {
         let newPath = path.rawValue.replacingOccurrences(of: "{identifier}", with: identifier.rawValue)
         guard let url = URL(string: newPath, relativeTo: base) else {
@@ -21,9 +21,9 @@ public class URLBuilder {
     }
 
     public func url(
-        path: ExercismClientPath,
-        params: [String: String] = [:],
-        urlArgs: CVarArg...
+            path: ExercismClientPath,
+            params: [String: String] = [:],
+            urlArgs: CVarArg...
     ) -> URL {
         let path = String(format: path.rawValue, arguments: urlArgs)
         guard let url = URL(string: path, relativeTo: base) else {

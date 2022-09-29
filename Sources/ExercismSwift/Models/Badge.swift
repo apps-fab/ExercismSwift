@@ -38,14 +38,14 @@ public struct Badge {
 extension Badge: Decodable {
     enum CodingKeys: String, CodingKey {
         case uuid
-        case isRevealed
-        case unlockedAt = "icon_url"
+        case isRevealed = "is_revealed"
+        case unlockedAt = "unlocked_at"
         case name
         case description = "blurb"
         case rarity = "is_external"
-        case iconName = "is_unlocked"
-        case numAwardees = "is_recommended"
-        case percentageAwardees
+        case iconName = "icon_name"
+        case numAwardees = "num_awardees"
+        case percentageAwardees = "percentage_awardees"
         case links
     }
 }

@@ -19,10 +19,10 @@ public class SolutionManager {
     func getOrCreateSolutionDir() -> URL? {
         do {
             let docsFolder = try fileManager.url(
-                    for: .documentDirectory,
-                    in: .userDomainMask,
-                    appropriateFor: nil,
-                    create: true)
+                for: .documentDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true)
 
             let solutionDir = docsFolder.appendingPathComponent("\(solution.exercise.trackId)/\(solution.exercise.id)/", isDirectory: true)
 
@@ -42,17 +42,16 @@ public class SolutionManager {
         }
     }
 
+    // TODO(kirk - 20/07/22) - Handle exceptions properly
     func downloadFile(at path: String, to destination: URL) {
         let url = URL(string: path, relativeTo: URL(string: solution.fileDownloadBaseUrl))!
         client.download(from: url, to: destination, headers: [:]) { result in
             switch result {
-            case .success(let url):
-                print("\(path) - \(url)")
+            case .success(_): break
             case .failure(let error):
                 print("Error downloading file: \(error)")
             }
         }
-
     }
 
     public func download() {
