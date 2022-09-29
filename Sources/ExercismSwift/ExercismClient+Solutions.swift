@@ -23,7 +23,7 @@ extension ExercismClient {
         }
 
         networkClient.get(
-                urlBuilder.url(path: "/v2/solutions", params: params),
+            urlBuilder.url(path: ExercismClientPath.solution, params: params),
                 headers: headers(),
                 completed: completed
         )
@@ -46,7 +46,7 @@ extension ExercismClient {
         }
 
         networkClient.get(
-                urlBuilder.url(path: "/v1/solutions/\(id)", params: params),
+            urlBuilder.url(path: ExercismClientPath.solution, params: params, urlArgs: id),
                 headers: headers()
         ) { (result: Result<SolutionFile, ExercismClientError>) in
             switch result {

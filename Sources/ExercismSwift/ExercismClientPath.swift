@@ -9,4 +9,7 @@ public enum ExercismClientPath:  String {
     case exercises = "/v2/tracks/%@/exercises"
     case tracks = "/v2/tracks"
     case validateToken = "/v2/validate_token"
+    case solutions = "/v1/solutions"
+    case solution = "/v1/solutions/%@"
+    case badges = "/v1/badges"
 }
