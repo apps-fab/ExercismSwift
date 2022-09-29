@@ -92,6 +92,7 @@ public class DefaultNetworkClient: NetworkClient {
     ) {
 
         let request = buildRequest(method: .GET, url: url, headers: headers)
+        print(request.url?.path ?? "")
         executeRequest(request: request, completed: completed)
     }
 
