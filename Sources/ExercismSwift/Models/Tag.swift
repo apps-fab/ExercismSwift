@@ -4,9 +4,13 @@
 
 import Foundation
 
-public struct Tag: Decodable {
+public struct Tag: Decodable, Hashable {
     public var type: String
     public var tags: [String]
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(type)
+    }
 }
 
 extension Tag {
