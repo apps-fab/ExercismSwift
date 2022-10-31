@@ -24,7 +24,7 @@ public protocol ExercismClientType: AnyObject {
         with id: String,
         for track: String?,
         exercise: String?,
-        completed: @escaping (Result<SolutionFile, ExercismClientError>) -> Void
+        completed: @escaping (Result<ExerciseDocument, ExercismClientError>) -> Void
     )
 
 }

@@ -43,6 +43,7 @@ public class SolutionManager {
     }
 
     // TODO(kirk - 20/07/22) - Handle exceptions properly
+
     func downloadFile(at path: String, to destination: URL) {
         let url = URL(string: path, relativeTo: URL(string: solution.fileDownloadBaseUrl))!
         client.download(from: url, to: destination, headers: [:]) { result in
@@ -54,8 +55,9 @@ public class SolutionManager {
         }
     }
 
-    public func download() {
-        if let solutionDir = getOrCreateSolutionDir() {
+    public func download() -> URL? {
+        let solutionDir = getOrCreateSolutionDir()
+        if let solutionDir = solutionDir {
             for file in solution.files {
                 do {
                     var fileComponents = file.split(separator: "/")
@@ -72,6 +74,8 @@ public class SolutionManager {
                     print("Error creating solution file (\(file)): \(error.localizedDescription)")
                 }
             }
+
         }
+        return solutionDir
     }
 }
