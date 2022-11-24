@@ -15,7 +15,7 @@ public struct Track {
     public let tags: [String]
     public let lastTouchedAt: Date?
     public let isNew: Bool
-    public let links: ResultLink
+    public let links: ResultLink?
     public let isJoined: Bool
     public let numLearntConcepts: Int
     public let numCompletedExercises: Int
@@ -35,7 +35,7 @@ public struct Track {
         tags = try container.decode(Array.self, forKey: .tags)
         lastTouchedAt = try? container.decode(Date.self, forKey: .lastTouchedAt)
         isNew = try container.decode(Bool.self, forKey: .isNew)
-        links = try container.decode(ResultLink.self, forKey: .links)
+        links = try container.decodeIfPresent(ResultLink.self, forKey: .links)
         isJoined = try container.decodeIfPresent(Bool.self, forKey: .isJoined) ?? false
         numLearntConcepts = try container.decodeIfPresent(Int.self, forKey: .numLearntConcepts) ?? 0
         numCompletedExercises = try container.decodeIfPresent(Int.self, forKey: .numCompletedExercises) ?? 0

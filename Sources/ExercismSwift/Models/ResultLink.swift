@@ -5,13 +5,13 @@
 import Foundation
 
 public struct ResultLink {
-    public let `self`: String
+    public let `self`: String?
     public let exercises: String?
     public let concepts: String?
 
     public init(decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.`self` = try container.decodeIfPresent(String.self, forKey: .`self`) ?? ""
+        self.`self` = try! container.decodeIfPresent(String.self, forKey: .`self`) ?? ""
         exercises = try? container.decodeIfPresent(String.self, forKey: .exercises) ?? ""
         concepts = try? container.decodeIfPresent(String.self, forKey: .concepts) ?? ""
     }
