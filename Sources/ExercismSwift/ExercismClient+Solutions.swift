@@ -13,50 +13,54 @@ extension ExercismClient {
         if let t = track {
             params["track_slug"] = t
         }
-        
+
         if let s = status {
             params["status"] = s.rawValue
         }
-        
+
         if let mt = mentoringStatus {
             params["mentoring_status"] = mt.rawValue
         }
-        
+
         networkClient.get(
             urlBuilder.url(path: .solutions,
-                           params: params),
+                params: params),
             headers: headers(),
             completed: completed
         )
     }
-    
+
     public func downloadSolution(
         with id: String = "latest",
         for track: String? = nil,
         exercise: String? = nil,
-        completed: @escaping (Result<SolutionFile, ExercismClientError>) -> Void
+        completed: @escaping (Result<ExerciseDocument, ExercismClientError>) -> Void
     ) {
         var params: [String: String] = [:]
-        
+
         if let t = track {
             params["track_id"] = t
         }
-        
+
         if let e = exercise {
             params["exercise_id"] = e
         }
-        
+
         networkClient.get(
-            urlBuilder.url(path: .solutionsFile, params: params),
+            urlBuilder.url(path: .solutionsFile, params: params, urlArgs: id),
             headers: headers()
         ) { (result: Result<SolutionFile, ExercismClientError>) in
             switch result {
-                
+
             case .success(let solution):
                 let solutionManager = SolutionManager(with: solution, client: self.networkClient)
-                solutionManager.download()
-            case .failure(_):
-                completed(result)
+                if let solutionDir = solutionManager.download() {
+                    completed(.success(ExerciseDocument(exerciseDirectory: solutionDir)))
+                } else {
+                    completed(.failure(.builderError(message: "Error creating exercise directory")))
+                }
+            case .failure(let error):
+                completed(.failure(error))
             }
         }
     }
