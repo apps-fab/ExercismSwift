@@ -51,14 +51,16 @@ extension ExercismClient {
             headers: headers()
         ) { (result: Result<SolutionFile, ExercismClientError>) in
             switch result {
-
             case .success(let solution):
                 let solutionManager = SolutionManager(with: solution, client: self.networkClient)
-                if let solutionDir = solutionManager.download() {
-                    completed(.success(ExerciseDocument(exerciseDirectory: solutionDir)))
-                } else {
-                    completed(.failure(.builderError(message: "Error creating exercise directory")))
+                solutionManager.download { url, error in
+                    if let url = url {
+                        completed(.success(ExerciseDocument(exerciseDirectory: url)))
+                    }  else {
+                        completed(.failure(.builderError(message: "Error creating exercise directory")))
+                    }
                 }
+
             case .failure(let error):
                 completed(.failure(error))
             }

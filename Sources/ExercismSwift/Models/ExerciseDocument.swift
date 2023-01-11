@@ -13,11 +13,16 @@ public struct ExerciseDocument {
     public init(exerciseDirectory: URL) {
         directory = exerciseDirectory
         let configDir = exerciseDirectory.appendingPathComponent(".exercism/config.json")
-        guard let config = ExerciseDocument.decodeConfig(configDir) else {
+        var config: ExerciseConfig?
+
+        do {
+            config = try ExerciseDocument.decodeConfig(configDir)
+        } catch let error {
             //TODO (Kirk - 29/09/2022) - Handle this error properly
-            print("Config not found")
-            return
+            print("This is the error: \(error)")
         }
+
+        guard let config = config else { return }
         solutions = config.files.solution.map { s in
             URL(string: s, relativeTo: directory)!
         }
@@ -27,13 +32,9 @@ public struct ExerciseDocument {
         instructions = directory.appendingPathComponent("README.md")
     }
 
-    static func decodeConfig(_ url: URL) -> ExerciseConfig? {
-        do {
-            let data = try Data(contentsOf: url)
-            return try? JSONDecoder().decode(ExerciseConfig.self, from: data)
-        } catch {
-            print(error)
-            return nil
-        }
+    static func decodeConfig(_ url: URL) throws -> ExerciseConfig {
+        let data = try Data(contentsOf: url)
+        let config =  try JSONDecoder().decode(ExerciseConfig.self, from: data)
+        return config
     }
 }

@@ -15,7 +15,6 @@ public class SolutionManager {
         fileManager = FileManager.default
     }
 
-
     func getOrCreateSolutionDir() -> URL? {
         do {
             let docsFolder = try fileManager.url(
@@ -29,14 +28,13 @@ public class SolutionManager {
             if !fileManager.fileExists(atPath: solutionDir.relativePath) {
                 do {
                     try fileManager.createDirectory(atPath: solutionDir.path, withIntermediateDirectories: true)
-                } catch {
+                } catch let error {
                     print("Error creating solution directory: \(error.localizedDescription)")
-                    return nil
                 }
             }
 
             return solutionDir
-        } catch {
+        } catch let error {
             print("URL error: \(error.localizedDescription)")
             return nil
         }
@@ -44,20 +42,20 @@ public class SolutionManager {
 
     // TODO(kirk - 20/07/22) - Handle exceptions properly
 
-    func downloadFile(at path: String, to destination: URL) {
+    func downloadFile(at path: String, to destination: URL, completed: @escaping ((Bool) -> Void)) {
         let url = URL(string: path, relativeTo: URL(string: solution.fileDownloadBaseUrl))!
         client.download(from: url, to: destination, headers: [:]) { result in
             switch result {
-            case .success(_): break
-            case .failure(let error):
-                print("Error downloading file: \(error)")
+            case .success(_):
+                completed(true)
+            case .failure:
+                completed(false)
             }
         }
     }
 
-    public func download() -> URL? {
-        let solutionDir = getOrCreateSolutionDir()
-        if let solutionDir = solutionDir {
+    public func download(_ completed: @escaping (URL?, Error?) -> Void) {
+        if let solutionDir = getOrCreateSolutionDir() {
             for file in solution.files {
                 do {
                     var fileComponents = file.split(separator: "/")
@@ -69,13 +67,16 @@ public class SolutionManager {
                         destPath = solutionDir.appendingPathComponent(fileComponents.joined(separator: "/"), isDirectory: true)
                         try fileManager.createDirectory(atPath: destPath.path, withIntermediateDirectories: true)
                     }
-                    downloadFile(at: file, to: destPath.appendingPathComponent(fileName))
-                } catch {
-                    print("Error creating solution file (\(file)): \(error.localizedDescription)")
+                    downloadFile(at: file,
+                                  to: destPath.appendingPathComponent(fileName)) { complete in
+                        if complete {
+                            completed(solutionDir, nil)
+                        }
+                    }
+                } catch let error {
+                    completed(nil, error)
                 }
             }
-
         }
-        return solutionDir
     }
 }
