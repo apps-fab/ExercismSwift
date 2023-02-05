@@ -72,6 +72,7 @@ public class DefaultNetworkClient: NetworkClient {
         
         decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(DateFormatter.iso8601Full)
+//        decoder.keyDecodingStrategy = .convertFromSnakeCase
         var headers = [
             "User-Agent": userAgent,
         ]

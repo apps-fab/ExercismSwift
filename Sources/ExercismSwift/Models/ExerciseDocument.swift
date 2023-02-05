@@ -9,8 +9,10 @@ public struct ExerciseDocument {
     public var solutions: [URL] = []
     public var tests: [URL] = []
     public var instructions: URL? = nil
+    public let solution: SolutionFile
 
-    public init(exerciseDirectory: URL) {
+    public init(exerciseDirectory: URL, solution: SolutionFile) {
+        self.solution = solution
         directory = exerciseDirectory
         let configDir = exerciseDirectory.appendingPathComponent(".exercism/config.json")
         var config: ExerciseConfig?

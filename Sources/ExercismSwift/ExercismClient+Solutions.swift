@@ -55,7 +55,7 @@ extension ExercismClient {
                 let solutionManager = SolutionManager(with: solution, client: self.networkClient)
                 solutionManager.download { url, error in
                     if let url = url {
-                        completed(.success(ExerciseDocument(exerciseDirectory: url)))
+                        completed(.success(ExerciseDocument(exerciseDirectory: url, solution: solution)))
                     }  else {
                         completed(.failure(.builderError(message: "Error creating exercise directory")))
                     }
