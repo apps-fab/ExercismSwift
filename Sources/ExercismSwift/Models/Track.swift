@@ -21,8 +21,9 @@ public struct Track {
     public let numCompletedExercises: Int
     public let numSolutions: Int
     public let hasNotifications: Bool
+}
 
-
+extension Track: Decodable, Hashable, Identifiable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         slug = try container.decode(String.self, forKey: .slug)
@@ -42,9 +43,7 @@ public struct Track {
         numSolutions = try container.decodeIfPresent(Int.self, forKey: .numSolutions) ?? 0
         hasNotifications = try container.decodeIfPresent(Bool.self, forKey: .hasNotifications) ?? false
     }
-}
 
-extension Track: Decodable, Hashable, Identifiable {
     public var id: String {
         slug
     }
