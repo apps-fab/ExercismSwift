@@ -8,7 +8,7 @@ public struct Solution {
     public let uuid: String
     public let privateUrl: String
     public let publicUrl: String
-    public let status: String
+    public let status: SolutionStatus
     public let mentoringStatus: String
     public let publishedIterationHeadTestsStatus: String
     public let hasNotifications: Bool
@@ -31,7 +31,7 @@ public struct Solution {
         uuid = try container.decode(String.self, forKey: .uuid)
         privateUrl = try container.decode(String.self, forKey: .privateUrl)
         publicUrl = try container.decode(String.self, forKey: .publicUrl)
-        status = try container.decode(String.self, forKey: .status)
+        status = try container.decode(SolutionStatus.self, forKey: .status)
         mentoringStatus = try container.decode(String.self, forKey: .mentoringStatus)
         publishedIterationHeadTestsStatus = try container.decode(String.self, forKey: .publishedIterationHeadTestsStatus)
         hasNotifications = try container.decode(Bool.self, forKey: .hasNotifications)
@@ -74,10 +74,11 @@ extension Solution: Decodable {
     }
 }
 
-public enum SolutionStatus: String {
+public enum SolutionStatus: String, Decodable {
     case started
     case iterated
     case published
+    case completed
 }
 
 public enum MentoringStatus: String {

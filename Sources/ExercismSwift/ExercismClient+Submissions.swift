@@ -28,9 +28,16 @@ extension ExercismClient {
     }
 
     public func cancelTestRun(
-        with link: String,
+        withLink link: String,
         completed: @escaping (Result<TestSubmission, ExercismClientError>) -> Void
     ) {
         networkClient.get(URL(string: link)!, headers: headers(), completed: completed)
+    }
+
+    public func submitSolution(
+        withLink link: String,
+        completed: @escaping (Result<SubmitSolutionResponse, ExercismClientError>) -> Void
+    ) {
+        networkClient.post(URL(string: link)!, body: "", headers: headers(), completed: completed)
     }
 }

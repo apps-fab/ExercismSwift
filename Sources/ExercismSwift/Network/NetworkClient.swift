@@ -72,7 +72,6 @@ public class DefaultNetworkClient: NetworkClient {
         
         decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .formatted(DateFormatter.iso8601Full)
-//        decoder.keyDecodingStrategy = .convertFromSnakeCase
         var headers = [
             "User-Agent": userAgent,
         ]
@@ -93,7 +92,7 @@ public class DefaultNetworkClient: NetworkClient {
     ) {
         
         let request = buildRequest(method: .GET, url: url, headers: headers)
-        print(request.url?.path ?? "")
+        print(request.url?.absoluteURL ?? "")
         executeRequest(request: request, completed: completed)
     }
     
