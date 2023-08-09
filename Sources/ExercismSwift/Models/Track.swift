@@ -23,7 +23,7 @@ public struct Track {
     public let hasNotifications: Bool
 }
 
-extension Track: Decodable, Hashable, Identifiable {
+extension Track: Codable, Hashable, Identifiable {
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         slug = try container.decode(String.self, forKey: .slug)
@@ -42,6 +42,26 @@ extension Track: Decodable, Hashable, Identifiable {
         numCompletedExercises = try container.decodeIfPresent(Int.self, forKey: .numCompletedExercises) ?? 0
         numSolutions = try container.decodeIfPresent(Int.self, forKey: .numSolutions) ?? 0
         hasNotifications = try container.decodeIfPresent(Bool.self, forKey: .hasNotifications) ?? false
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+
+        try container.encode(slug, forKey: .slug)
+        try container.encode(title, forKey: .title)
+        try container.encode(course, forKey: .course)
+        try container.encode(numExercises , forKey: .numExercises)
+        try container.encode(numConcepts, forKey: .numConcepts)
+        try container.encode(webUrl, forKey: .webUrl)
+        try container.encode(iconUrl, forKey: .iconUrl)
+        try container.encode(tags, forKey: .tags)
+        try container.encodeIfPresent(lastTouchedAt, forKey: .lastTouchedAt)
+        try container.encode(isNew, forKey: .isNew)
+        try container.encodeIfPresent(links, forKey: .links)
+        try container.encode(isJoined, forKey: .isJoined)
+        try container.encode(numLearntConcepts, forKey: .numLearntConcepts)
+        try container.encode(numSolutions, forKey: .numSolutions)
+        try container.encode(hasNotifications, forKey: .hasNotifications)
     }
 
     public var id: String {
