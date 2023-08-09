@@ -13,4 +13,5 @@ public enum ExercismClientPath:  String {
     case solutionsFile = "/v1/solutions/%@"
     case badges = "/v1/badges"
     case testSubmission = "/v2/solutions/%@/submissions"
+    case completeSolution = "/v2/solutions/%@/complete"
 }

@@ -40,4 +40,19 @@ extension ExercismClient {
     ) {
         networkClient.post(URL(string: link)!, body: "", headers: headers(), completed: completed)
     }
+
+    public func completeSolution(
+        for solution: String,
+        publish: Bool = false,
+        iteration: Int? = nil,
+        completed: @escaping (Result<CompletedSolution, ExercismClientError>) -> Void
+    ) {
+        let payload = CompleteSolutionPayload(publish: publish, iteration: iteration)
+        networkClient.post(urlBuilder.url(path: .completeSolution, urlArgs: solution), body: payload, headers: headers(), completed: completed)
+    }
+
+    struct CompleteSolutionPayload: Codable {
+        let publish: Bool
+        let iteration: Int?
+    }
 }
