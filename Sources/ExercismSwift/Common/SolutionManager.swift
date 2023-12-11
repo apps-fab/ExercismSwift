@@ -42,21 +42,20 @@ public class SolutionManager {
 
     // TODO(kirk - 20/07/22) - Handle exceptions properly
 
-    func downloadFile(at path: String, to destination: URL, completed: @escaping ((Bool) -> Void)) {
+    func downloadFile(at path: String, to destination: URL, completed: @escaping  (Result<URL, ExercismClientError>) -> Void) {
         let url = URL(string: path, relativeTo: URL(string: solution.fileDownloadBaseUrl))!
         client.download(from: url, to: destination, headers: [:]) { result in
-            switch result {
-            case .success(_):
-                completed(true)
-            case .failure:
-                completed(false)
-            }
+            completed(result)
         }
     }
 
-    public func download(_ completed: @escaping (URL?, Error?) -> Void) {
+    public func download(_ completed: @escaping(URL?, Error?) -> Void) {
+        let dispatchGroup = DispatchGroup()
+        var error: ExercismClientError?
+
         if let solutionDir = getOrCreateSolutionDir() {
             for file in solution.files {
+                dispatchGroup.enter()
                 do {
                     var fileComponents = file.split(separator: "/")
                     let fileLen = fileComponents.count
@@ -69,20 +68,31 @@ public class SolutionManager {
                     }
                     downloadFile(at: file,
                                  to: destPath.appendingPathComponent(fileName)) { complete in
-                        if file == self.solution.files.last && complete {
-                            print("we completed: \(complete)")
-                            completed(solutionDir, nil)
-
-                        }
-                        print("we completed: \(complete)")
-                        //                        if complete {
-                        //                            completed(solutionDir, nil)
-                        //                        }
+                        dispatchGroup.leave()
                     }
                 } catch let error {
                     completed(nil, error)
                 }
             }
-        }
+            dispatchGroup.notify(queue: DispatchQueue.main) {
+                if let error = error {
+                    completed(nil, error)
+                } else {
+                    completed(solutionDir, nil)
+                }
+        }        }
+    }
+
+
+}
+
+extension DispatchQueue {
+    static func log(action: String) {
+        print("""
+            \(action):
+            \(String(validatingUTF8: __dispatch_queue_get_label(nil))!)
+            \(Thread.current)
+            """
+        )
     }
 }
