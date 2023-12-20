@@ -17,7 +17,6 @@ public struct ValidateTokenResponse {
             status = .invalid
         }
     }
-
 }
 
 public enum TokenStatus {

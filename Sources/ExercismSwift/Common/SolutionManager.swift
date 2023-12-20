@@ -68,10 +68,16 @@ public class SolutionManager {
                         try fileManager.createDirectory(atPath: destPath.path, withIntermediateDirectories: true)
                     }
                     downloadFile(at: file,
-                                  to: destPath.appendingPathComponent(fileName)) { complete in
-                        if complete {
+                                 to: destPath.appendingPathComponent(fileName)) { complete in
+                        if file == self.solution.files.last && complete {
+                            print("we completed: \(complete)")
                             completed(solutionDir, nil)
+
                         }
+                        print("we completed: \(complete)")
+                        //                        if complete {
+                        //                            completed(solutionDir, nil)
+                        //                        }
                     }
                 } catch let error {
                     completed(nil, error)
