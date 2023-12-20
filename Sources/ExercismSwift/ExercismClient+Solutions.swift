@@ -66,4 +66,15 @@ extension ExercismClient {
             }
         }
     }
+
+    public func getIteration(
+        for id: String,
+         completed: @escaping (Result<Iteration, ExercismClientError>) -> Void
+    ) {
+        networkClient.get(
+            urlBuilder.url(path: .iteration, urlArgs: id),
+            headers: headers(),
+            completed: completed
+        )
+    }
 }
