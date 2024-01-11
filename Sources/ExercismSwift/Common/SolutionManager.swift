@@ -15,7 +15,7 @@ public class SolutionManager {
         fileManager = FileManager.default
     }
 
-    func getOrCreateSolutionDir() -> URL? {
+    func getOrCreateSolutionDir() throws -> URL {
         do {
             let docsFolder = try fileManager.url(
                 for: .documentDirectory,
@@ -26,21 +26,11 @@ public class SolutionManager {
             let solutionDir = docsFolder.appendingPathComponent("\(solution.exercise.trackId)/\(solution.exercise.id)/", isDirectory: true)
 
             if !fileManager.fileExists(atPath: solutionDir.relativePath) {
-                do {
-                    try fileManager.createDirectory(atPath: solutionDir.path, withIntermediateDirectories: true)
-                } catch let error {
-                    print("Error creating solution directory: \(error.localizedDescription)")
-                }
+                try fileManager.createDirectory(atPath: solutionDir.path, withIntermediateDirectories: true)
             }
-
             return solutionDir
-        } catch let error {
-            print("URL error: \(error.localizedDescription)")
-            return nil
         }
     }
-
-    // TODO(kirk - 20/07/22) - Handle exceptions properly
 
     func downloadFile(at path: String, to destination: URL, completed: @escaping  (Result<URL, ExercismClientError>) -> Void) {
         let url = URL(string: path, relativeTo: URL(string: solution.fileDownloadBaseUrl))!
@@ -49,29 +39,25 @@ public class SolutionManager {
         }
     }
 
-    public func download(_ completed: @escaping(URL?, Error?) -> Void) {
+    public func download(_ completed: @escaping(URL?, ExercismClientError?) -> Void) {
         let dispatchGroup = DispatchGroup()
         var error: ExercismClientError?
-
-        if let solutionDir = getOrCreateSolutionDir() {
+        do {
+            let solutionDir = try getOrCreateSolutionDir()
             for file in solution.files {
                 dispatchGroup.enter()
-                do {
-                    var fileComponents = file.split(separator: "/")
-                    let fileLen = fileComponents.count
-                    var destPath = solutionDir
-                    let fileName = fileComponents.last!.description
-                    if fileLen > 1 {
-                        fileComponents.removeLast()
-                        destPath = solutionDir.appendingPathComponent(fileComponents.joined(separator: "/"), isDirectory: true)
-                        try fileManager.createDirectory(atPath: destPath.path, withIntermediateDirectories: true)
-                    }
-                    downloadFile(at: file,
-                                 to: destPath.appendingPathComponent(fileName)) { complete in
-                        dispatchGroup.leave()
-                    }
-                } catch let error {
-                    completed(nil, error)
+                var fileComponents = file.split(separator: "/")
+                let fileLen = fileComponents.count
+                var destPath = solutionDir
+                let fileName = fileComponents.last!.description
+                if fileLen > 1 {
+                    fileComponents.removeLast()
+                    destPath = solutionDir.appendingPathComponent(fileComponents.joined(separator: "/"), isDirectory: true)
+                    try fileManager.createDirectory(atPath: destPath.path, withIntermediateDirectories: true)
+                }
+                downloadFile(at: file,
+                             to: destPath.appendingPathComponent(fileName)) { complete in
+                    dispatchGroup.leave()
                 }
             }
             dispatchGroup.notify(queue: DispatchQueue.main) {
@@ -80,10 +66,11 @@ public class SolutionManager {
                 } else {
                     completed(solutionDir, nil)
                 }
-        }        }
+            }
+        } catch let error {
+            completed(nil, .builderError(message: error.localizedDescription))
+        }
     }
-
-
 }
 
 extension DispatchQueue {
