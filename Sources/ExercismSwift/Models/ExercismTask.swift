@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Task: Decodable {
+public struct ExercismTask: Decodable {
     public let id: Int
     public let title: String
 }

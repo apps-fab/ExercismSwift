@@ -1,6 +1,6 @@
 import Foundation
 
-public typealias Environment = ExercismSwiftEnvironment
+public typealias DebugEnvironment = ExercismSwiftEnvironment
 
 public struct ExercismSwiftEnvironment {
     static var log = Logger(handler: PrintLogHandler(), level: .info)
