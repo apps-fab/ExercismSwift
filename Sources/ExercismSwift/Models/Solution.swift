@@ -50,7 +50,7 @@ public struct Solution {
     }
 }
 
-extension Solution: Decodable {
+extension Solution: Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case uuid
         case privateUrl = "private_url"
@@ -74,7 +74,7 @@ extension Solution: Decodable {
     }
 }
 
-public enum SolutionStatus: String, Decodable {
+public enum SolutionStatus: String, Codable {
     case started
     case iterated
     case published

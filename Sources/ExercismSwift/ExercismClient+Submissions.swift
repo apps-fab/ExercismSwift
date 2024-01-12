@@ -48,7 +48,7 @@ extension ExercismClient {
         completed: @escaping (Result<CompletedSolution, ExercismClientError>) -> Void
     ) {
         let payload = CompleteSolutionPayload(publish: publish, iteration: iteration)
-        networkClient.post(urlBuilder.url(path: .completeSolution, urlArgs: solution), body: payload, headers: headers(), completed: completed)
+        networkClient.patch(urlBuilder.url(path: .completeSolution, urlArgs: solution), body: payload, headers: headers(), completed: completed)
     }
 
     struct CompleteSolutionPayload: Codable {

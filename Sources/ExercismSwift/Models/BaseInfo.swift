@@ -18,7 +18,7 @@ public struct BaseInfo {
     }
 }
 
-extension BaseInfo: Decodable {
+extension BaseInfo: Codable, Hashable {
     enum CodingKeys: String, CodingKey {
         case slug
         case title
