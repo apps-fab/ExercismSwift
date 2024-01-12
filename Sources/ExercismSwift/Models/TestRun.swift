@@ -14,7 +14,7 @@ public struct TestRun: Decodable {
     public let output: String?
     public let outputHtml: String?
     public let tests: [Test]
-    public let tasks: [Task]
+    public let tasks: [ExercismTask]
     public let highlightjsLanguage: String
     public let links: ResultLink
 

@@ -111,7 +111,7 @@ public class DefaultNetworkClient: NetworkClient {
             completed(.failure(.bodyEncodingError(error)))
             return
         }
-        Environment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
+        DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
         request.httpBody = requestBody
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -134,8 +134,8 @@ public class DefaultNetworkClient: NetworkClient {
             return
         }
         
-        Environment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
-        
+        DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
+
         request.httpBody = requestBody
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
@@ -176,7 +176,7 @@ public class DefaultNetworkClient: NetworkClient {
             if let error = NetworkClientHelpers.extractError(response: response, error: error) {
                 completeResult = .failure(error)
             } else if let url = url {
-                Environment.log.trace(url.description)
+                DebugEnvironment.log.trace(url.description)
                 do {
                     if FileManager.default.fileExists(atPath: destPath.relativePath) {
                         _ = try FileManager.default.replaceItemAt(destPath, withItemAt: url)
@@ -218,8 +218,8 @@ public class DefaultNetworkClient: NetworkClient {
                 return
             }
             
-            Environment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
-            
+            DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
+
             request.httpBody = requestBody
         }
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -254,16 +254,16 @@ public class DefaultNetworkClient: NetworkClient {
         request: URLRequest,
         completed: @escaping (Result<T, ExercismClientError>) -> Void
     ) {
-        Environment.log.debug("Request: \(request.httpMethod ?? "") \(request.url?.absoluteString ?? "")")
+        DebugEnvironment.log.debug("Request: \(request.httpMethod ?? "") \(request.url?.absoluteString ?? "")")
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             var completeResult: Result<T, ExercismClientError>?
             
             if let error = NetworkClientHelpers.extractError(data: data, response: response, error: error) {
                 completeResult = .failure(error)
             } else if let data = data {
-                Environment.log.trace(String(data: data, encoding: .utf8) ?? "")
+                DebugEnvironment.log.trace(String(data: data, encoding: .utf8) ?? "")
                 do {
-                    Environment.log.trace(String(data: data, encoding: .utf8) ?? "")
+                    DebugEnvironment.log.trace(String(data: data, encoding: .utf8) ?? "")
                     let result = try self.decoder.decode(T.self, from: data)
                     completeResult = .success(result)
                 } catch let decodingError as Swift.DecodingError {

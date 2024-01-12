@@ -24,7 +24,7 @@ extension ExercismClient {
 
         networkClient.get(
             urlBuilder.url(path: .solutions,
-                params: params),
+                           params: params),
             headers: headers(),
             completed: completed
         )
@@ -32,19 +32,13 @@ extension ExercismClient {
 
     public func downloadSolution(
         with id: String = "latest",
-        for track: String? = nil,
-        exercise: String? = nil,
+        for track: String,
+        exercise: String,
         completed: @escaping (Result<ExerciseDocument, ExercismClientError>) -> Void
     ) {
         var params: [String: String] = [:]
-
-        if let t = track {
-            params["track_id"] = t
-        }
-
-        if let e = exercise {
-            params["exercise_id"] = e
-        }
+        params["track_id"] = track
+        params["exercise_id"] = exercise
 
         networkClient.get(
             urlBuilder.url(path: .solutionsFile, params: params, urlArgs: id),
@@ -55,7 +49,12 @@ extension ExercismClient {
                 let solutionManager = SolutionManager(with: solution, client: self.networkClient)
                 solutionManager.download { url, error in
                     if let url = url {
-                        completed(.success(ExerciseDocument(exerciseDirectory: url, solution: solution)))
+                        do {
+                            let exerciseDocument = try ExerciseDocument(exerciseDirectory: url, solution: solution)
+                            completed(.success(exerciseDocument))
+                        } catch let error {
+                            completed(.failure(.builderError(message: error.localizedDescription)))
+                        }
                     }  else {
                         completed(.failure(.builderError(message: "Error creating exercise directory")))
                     }

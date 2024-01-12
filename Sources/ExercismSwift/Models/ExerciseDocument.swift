@@ -11,18 +11,12 @@ public struct ExerciseDocument {
     public var instructions: URL? = nil
     public let solution: SolutionFile
 
-    public init(exerciseDirectory: URL, solution: SolutionFile) {
+    public init(exerciseDirectory: URL, solution: SolutionFile) throws {
         self.solution = solution
         directory = exerciseDirectory
         let configDir = exerciseDirectory.appendingPathComponent(".exercism/config.json")
         var config: ExerciseConfig?
-
-        do {
-            config = try ExerciseDocument.decodeConfig(configDir)
-        } catch let error {
-            //TODO (Kirk - 29/09/2022) - Handle this error properly
-            print("This is the error: \(error)")
-        }
+        config = try ExerciseDocument.decodeConfig(configDir)
 
         guard let config = config else { return }
         solutions = config.files.solution.map { s in

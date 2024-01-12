@@ -22,8 +22,8 @@ public protocol ExercismClientType: AnyObject {
 
     func downloadSolution(
         with id: String,
-        for track: String?,
-        exercise: String?,
+        for track: String,
+        exercise: String,
         completed: @escaping (Result<ExerciseDocument, ExercismClientError>) -> Void
     )
 
