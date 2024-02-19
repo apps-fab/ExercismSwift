@@ -15,7 +15,7 @@ public struct Solution {
     public let numViews: Int
     public let numStars: Int
     public let numComments: Int
-    public let numTterations: Int
+    public let numIterations: Int
     public let numLoc: Int
     public let isOutOfDate: Bool
     public let publishedAt: Date?
@@ -38,7 +38,7 @@ public struct Solution {
         numViews = try container.decode(Int.self, forKey: .numViews)
         numStars = try container.decode(Int.self, forKey: .numStars)
         numComments = try container.decode(Int.self, forKey: .numComments)
-        numTterations = try container.decode(Int.self, forKey: .numTterations)
+        numIterations = try container.decode(Int.self, forKey: .numIterations)
         numLoc = try container.decode(Int?.self, forKey: .numLoc) ?? 0
         isOutOfDate = try container.decode(Bool.self, forKey: .isOutOfDate)
         publishedAt = try? container.decode(Date.self, forKey: .publishedAt)
@@ -62,7 +62,7 @@ extension Solution: Codable, Hashable {
         case numViews = "num_views"
         case numStars = "num_stars"
         case numComments = "num_comments"
-        case numTterations = "num_iterations"
+        case numIterations = "num_iterations"
         case numLoc = "num_loc"
         case isOutOfDate = "is_out_of_date"
         case publishedAt = "published_at"
