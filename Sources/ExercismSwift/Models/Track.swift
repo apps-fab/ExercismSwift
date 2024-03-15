@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Track {
+public struct Track: Sendable {
     public let slug: String
     public let title: String
     public let course: Bool

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct ResultLink {
+public struct ResultLink: Sendable {
     public let `self`: String?
     public let exercises: String?
     public let concepts: String?

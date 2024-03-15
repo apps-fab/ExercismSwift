@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Solution {
+public struct Solution: Sendable {
     public let uuid: String
     public let privateUrl: String
     public let publicUrl: String
@@ -24,7 +24,6 @@ public struct Solution {
     public let lastIteratedAt: Date?
     public let exercise: BaseInfo
     public let track: BaseInfo
-
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
@@ -74,7 +73,7 @@ extension Solution: Codable, Hashable {
     }
 }
 
-public enum SolutionStatus: String, Codable {
+public enum SolutionStatus: String, Codable, Sendable {
     case started
     case iterated
     case published

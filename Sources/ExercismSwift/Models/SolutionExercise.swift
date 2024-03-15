@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct SolutionExercise {
+public struct SolutionExercise: Sendable {
     public let id: String
     public let instructionsUrl: String
     public let trackId: String

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct TestSubmission: Decodable {
+public struct TestSubmission: Decodable, Sendable {
     public let uuid: String
     public let testsStatus: SubmissionTestsStatus
     public let links: SubmissionLinks
@@ -28,7 +28,7 @@ public struct TestSubmission: Decodable {
     }
 }
 
-public enum SubmissionTestsStatus: String, Decodable {
+public enum SubmissionTestsStatus: String, Decodable, Sendable {
     case notQueued = "not_queued"
     case queued
     case passed

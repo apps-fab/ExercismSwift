@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct TestRunResponse: Decodable {
+public struct TestRunResponse: Decodable, Sendable {
     public let testRun: TestRun?
     public let testRunner: TestRunner
 

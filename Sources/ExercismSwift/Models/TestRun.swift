@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct TestRun: Decodable {
+public struct TestRun: Decodable, Sendable {
     public let uuid: String
     public let submissionUuid: String
     public let version: Int

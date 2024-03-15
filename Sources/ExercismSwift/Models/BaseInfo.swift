@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct BaseInfo {
+public struct BaseInfo: Sendable {
     public let slug: String
     public let title: String
     public let iconUrl: String

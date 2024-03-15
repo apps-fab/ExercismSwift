@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct ExerciseDocument {
+public struct ExerciseDocument: Sendable {
     public var directory: URL
     public var solutions: [URL] = []
     public var tests: [URL] = []

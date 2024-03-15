@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Iteration: Decodable {
+public struct Iteration: Decodable, Sendable {
     public let uuid: String
     public let submissionUUID: String
     public let idx: Int
@@ -36,7 +36,7 @@ public struct Iteration: Decodable {
     }
 }
 
-public struct SubmitSolutionResponse: Decodable {
+public struct SubmitSolutionResponse: Decodable, Sendable {
     public let iteration: Iteration
 
     enum CodingKeys: String, CodingKey {

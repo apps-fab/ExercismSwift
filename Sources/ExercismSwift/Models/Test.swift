@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Test: Decodable {
+public struct Test: Decodable, Sendable {
 
     public let name: String
     public let status: TestStatus
@@ -47,7 +47,7 @@ extension Test {
     }
 }
 
-public enum TestStatus: String, Decodable {
+public enum TestStatus: String, Decodable, Sendable {
     case error
     case fail
     case pass
