@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct TestRunner: Decodable {
+public struct TestRunner: Decodable, Sendable {
     public let averageTestDuration: Int
     public let status: TestRunnerStatus?
 
@@ -22,7 +22,7 @@ extension TestRunner {
     }
 }
 
-public struct TestRunnerStatus: Decodable {
+public struct TestRunnerStatus: Decodable, Sendable {
     public let exercise: Bool
     public let track: Bool
 }

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct Exercise: Hashable {
+public struct Exercise: Hashable, Sendable {
     public let slug: String
     public let type: String
     public let iconUrl: String

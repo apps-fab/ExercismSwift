@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum IterationStatus: String, Codable {
+public enum IterationStatus: String, Codable, Sendable {
     case deleted = "deleted"
     case untested = "untested"
     case testing = "testing"

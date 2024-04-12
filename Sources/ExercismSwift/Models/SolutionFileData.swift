@@ -5,7 +5,7 @@
 
 import Foundation
 
-public struct SolutionFileData: Encodable {
+public struct SolutionFileData: Encodable, Sendable {
     public let filename: String
     public let content: String
     public let type: SolutionFileType

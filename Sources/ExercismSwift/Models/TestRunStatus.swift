@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum TestRunStatus: String, Decodable {
+public enum TestRunStatus: String, Decodable, Sendable {
     case pass
     case fail
     case error

@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct CompletedSolution: Decodable {
+public struct CompletedSolution: Decodable, Sendable {
     public let track: Track
     public let exercise: Exercise
     public let unlockedExercises: [Exercise]
@@ -29,11 +29,11 @@ public struct CompletedSolution: Decodable {
     }
 }
 
-public struct Concept: Decodable {
+public struct Concept: Decodable, Sendable {
     public let name: String
 }
 
-public struct ConceptProgressions: Decodable {
+public struct ConceptProgressions: Decodable, Sendable {
     public let name: String
     public let from: Int
     public let to: Int

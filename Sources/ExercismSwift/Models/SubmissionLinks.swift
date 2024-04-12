@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct SubmissionLinks: Decodable {
+public struct SubmissionLinks: Decodable, Sendable {
     public let cancel: String
     public let submit: String
     public let testRun: String

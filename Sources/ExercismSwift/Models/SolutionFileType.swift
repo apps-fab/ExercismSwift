@@ -4,7 +4,7 @@
 
 import Foundation
 
-public enum SolutionFileType: Encodable {
+public enum SolutionFileType: Encodable, Sendable {
     case exercise
     case solution
     case legacy
