@@ -72,14 +72,3 @@ public class SolutionManager {
         }
     }
 }
-
-extension DispatchQueue {
-    static func log(action: String) {
-        print("""
-            \(action):
-            \(String(validatingUTF8: __dispatch_queue_get_label(nil))!)
-            \(Thread.current)
-            """
-        )
-    }
-}

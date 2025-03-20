@@ -7,6 +7,23 @@ public enum ExercismClientError: Error {
     case decodingError(Error)
     case unsupportedResponseError
     case builderError(message: String)
+
+    public var description: String {
+        switch self {
+        case .genericError(let underlyingError):
+            return "An error occurred: \(underlyingError.localizedDescription)"
+        case .apiError(let code, let type, let message):
+            return "API Error - Code: \(code.rawValue), Type: \(type), Message: \(message)"
+        case .bodyEncodingError(let underlyingError):
+            return "Error encoding request body: \(underlyingError.localizedDescription)"
+        case .decodingError(let underlyingError):
+            return "Error decoding response: \(underlyingError.localizedDescription)"
+        case .unsupportedResponseError:
+            return "Received an unsupported response"
+        case .builderError(let message):
+            return "Builder Error: \(message)"
+        }
+    }
 }
 
 public enum ExercismErrorCode: String {

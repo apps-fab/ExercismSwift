@@ -5,7 +5,6 @@
 import Foundation
 
 public struct Test: Decodable, Sendable {
-
     public let name: String
     public let status: TestStatus
     public let testCode: String?

@@ -32,5 +32,4 @@ public struct TestRun: Decodable, Sendable {
         case highlightjsLanguage = "highlightjs_language"
         case links
     }
-
 }
