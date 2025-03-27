@@ -22,8 +22,4 @@ public struct Iteration: Decodable, Sendable {
 
 public struct SubmitSolutionResponse: Decodable, Sendable {
     public let iteration: Iteration
-
-    enum CodingKeys: String, CodingKey {
-        case iteration
-    }
 }

@@ -68,17 +68,17 @@ extension ExercismClient {
         networkClient.get(from: urlBuilder.url(for: .solutionsFile,
                                                params: params,
                                                urlArgs: id),
-                          headers: headers()) { (result: Result<SolutionFile,
+                          headers: headers()) { (result: Result<SolutionResponse,
                                                  ExercismClientError>) in
             switch result {
-            case .success(let solution):
-                let solutionManager = SolutionManager(with: solution,
+            case .success(let solutionResponse):
+                let solutionManager = SolutionManager(with: solutionResponse.solution,
                                                       client: self.networkClient)
                 solutionManager.download { url, error in
                     if let url = url {
                         do {
                             let exerciseDocument = try ExerciseDocument(exerciseDirectory: url,
-                                                                        solution: solution)
+                                                                        solution: solutionResponse.solution)
                             completed(.success(exerciseDocument))
                         } catch let error {
                             completed(.failure(.builderError(message: error.localizedDescription)))

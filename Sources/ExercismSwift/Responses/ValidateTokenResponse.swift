@@ -4,28 +4,15 @@
 
 import Foundation
 
-public struct ValidateTokenResponse {
-    public let status: TokenStatus
+public struct ValidateTokenResponse: Decodable {
+    public let status: StatusWrapper
 
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let rawStatus = try container.decode([String: String].self, forKey: .status)
-        let token = rawStatus.first(where: { $0.key == "token" })
-        if token?.value == "valid" {
-            status = .valid
-        } else {
-            status = .invalid
-        }
+    public struct StatusWrapper: Decodable {
+        public let token: TokenStatus
     }
 }
 
-public enum TokenStatus {
+public enum TokenStatus: String, Decodable {
     case valid
     case invalid
-}
-
-extension ValidateTokenResponse: Decodable {
-    enum CodingKeys: String, CodingKey {
-        case status
-    }
 }

@@ -7,11 +7,17 @@ import Foundation
 public struct SolutionExercise: Sendable, Decodable {
     public let id: String
     public let instructionsUrl: String
-    public let trackId: String
-    public let trackLanguage: String
+    public let track: SolutionTrack
+    public var trackLanguage: String {
+        return track.language
+    }
+
+    public var trackId: String {
+        return track.id
+    }
 }
 
-enum SolutionExerciseTrackKeys: String, CodingKey {
-    case id
-    case language
+public struct SolutionTrack: Decodable {
+    public let id: String
+    public let language: String
 }

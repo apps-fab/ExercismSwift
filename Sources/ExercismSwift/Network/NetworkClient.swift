@@ -165,28 +165,27 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - body: The request body to be sent.
     ///   - headers: Optional custom headers.
     ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
-    public func patch<T: Encodable, R: Decodable>(
-        to url: URL,
-        body: T,
-        headers: Network.HTTPHeaders? = nil,
-        completed: @escaping (Result<R, ExercismClientError>) -> Void) {
-            var request = buildRequest(method: .PATCH, url: url, headers: headers)
-            let requestBody: Data
+    public func patch<T: Encodable, R: Decodable>(to url: URL,
+                                                  body: T,
+                                                  headers: Network.HTTPHeaders? = nil,
+                                                  completed: @escaping (Result<R, ExercismClientError>) -> Void) {
+        var request = buildRequest(method: .PATCH, url: url, headers: headers)
+        let requestBody: Data
 
-            do {
-                requestBody = try encoder.encode(body)
-            } catch {
-                completed(.failure(.bodyEncodingError(error)))
-                return
-            }
-
-            DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
-
-            request.httpBody = requestBody
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-
-            executeRequest(request: request, completed: completed)
+        do {
+            requestBody = try encoder.encode(body)
+        } catch {
+            completed(.failure(.bodyEncodingError(error)))
+            return
         }
+
+        DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
+
+        request.httpBody = requestBody
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+
+        executeRequest(request: request, completed: completed)
+    }
 
     /// Performs a DELETE request with an optional request body.
     /// - Parameters:
@@ -225,9 +224,9 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - headers: Optional custom headers.
     ///   - completed: A completion handler returning a `Result` containing the file URL or an error.
     public func download(from sourcePath: URL,
-        to destPath: URL,
-        headers: Network.HTTPHeaders? = [:],
-        completed: @escaping (Result<URL, ExercismClientError>) -> Void) {
+                         to destPath: URL,
+                         headers: Network.HTTPHeaders? = [:],
+                         completed: @escaping (Result<URL, ExercismClientError>) -> Void) {
         let request = initRequest(url: sourcePath, headers: headers)
 
         let task = URLSession.shared.downloadTask(with: request) { tempURL, response, error in

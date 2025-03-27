@@ -16,7 +16,7 @@ public struct Solution: Sendable, Codable, Hashable {
     public let numStars: Int
     public let numComments: Int
     public let numIterations: Int
-    public let numLoc: Int
+    public let numLoc: Int?
     public let isOutOfDate: Bool
     public let publishedAt: Date?
     public let completedAt: Date?
