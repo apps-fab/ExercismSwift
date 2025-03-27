@@ -1,6 +1,6 @@
 //
 //  Badge.swift
-//  
+//
 //
 //  Created by Angie Mugo on 29/09/2022.
 //
@@ -18,7 +18,6 @@ public struct Badge {
     public let numAwardees: Int
     public let percentageAwardees: Int
     public let links: [BadgeLink]
-
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

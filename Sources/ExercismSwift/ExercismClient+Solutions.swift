@@ -30,6 +30,15 @@ extension ExercismClient {
         )
     }
 
+    public func initialSolution(for solutionId: String,
+                                completed: @escaping (Result<InitialFiles, ExercismClientError>) -> Void) {
+        networkClient.get(
+            urlBuilder.url(path: .initialFiles, urlArgs: solutionId),
+            headers: headers(),
+            completed: completed
+        )
+    }
+
     public func downloadSolution(
         with id: String = "latest",
         for track: String,
