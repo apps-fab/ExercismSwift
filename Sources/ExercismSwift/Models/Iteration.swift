@@ -18,22 +18,6 @@ public struct Iteration: Decodable, Sendable {
     public let isPublished: Bool
     public let isLatest: Bool
     public let links: IterationLinks
-
-    enum CodingKeys: String, CodingKey {
-        case uuid
-        case submissionUUID = "submission_uuid"
-        case idx
-        case status
-        case numEssentialAutomatedComments = "num_essential_automated_comments"
-        case numActionableAutomatedComments = "num_actionable_automated_comments"
-        case numNonActionableAutomatedComments = "num_non_actionable_automated_comments"
-        case submissionMethod = "submission_method"
-        case createdAt = "created_at"
-        case testsStatus = "tests_status"
-        case isPublished = "is_published"
-        case isLatest = "is_latest"
-        case links
-    }
 }
 
 public struct SubmitSolutionResponse: Decodable, Sendable {

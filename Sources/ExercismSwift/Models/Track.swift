@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TODO: is this necessary? where do we call encodable for this
 public struct Track: Sendable {
     public let slug: String
     public let title: String

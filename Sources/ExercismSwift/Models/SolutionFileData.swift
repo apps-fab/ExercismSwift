@@ -11,8 +11,11 @@ public struct SolutionFileData: Codable, Sendable {
     public let type: String
     public let digest: String?
 
-    public init(fileName: String, content: String, type: SolutionFileType = SolutionFileType.exercise, digest: String? = nil) {
-        filename = fileName
+    public init(fileName: String,
+                content: String,
+                type: SolutionFileType = SolutionFileType.exercise,
+                digest: String? = nil) {
+        self.filename = fileName
         self.content = content
         self.type = type.rawValue
         self.digest = digest

@@ -11,13 +11,4 @@ public struct IterationLinks: Codable, Sendable {
     public let solution: String
     public let testRun: String
     public let files: String
-
-    enum CodingKeys: String, CodingKey {
-        case selfLink = "self"
-        case automatedFeedback = "automated_feedback"
-        case delete
-        case solution
-        case testRun = "test_run"
-        case files
-    }
 }

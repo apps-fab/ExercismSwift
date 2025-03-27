@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct SolutionFile: Sendable {
+public struct SolutionFile: Decodable, Sendable {
     public let id: String
     public let url: String
     public let exercise: SolutionExercise
@@ -12,35 +12,27 @@ public struct SolutionFile: Sendable {
     public let files: [String]
     public let submittedAt: Date?
 
-    enum SolutionKeys: String, CodingKey {
-        case id
-        case url
-        case exercise
+    private enum CodingKeys: String, CodingKey {
+        case id, url, exercise, files, submission
         case fileDownloadBaseUrl = "file_download_base_url"
-        case files
-        case submission
     }
 
-    enum SubmissionKeys: String, CodingKey {
+    private enum SubmissionKeys: String, CodingKey {
         case submittedAt = "submitted_at"
     }
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let solutionContainer = try container.nestedContainer(keyedBy: SolutionKeys.self, forKey: .solution)
-        id = try solutionContainer.decode(String.self, forKey: .id)
-        url = try solutionContainer.decode(String.self, forKey: .url)
-        fileDownloadBaseUrl = try solutionContainer.decode(String.self, forKey: .fileDownloadBaseUrl)
-        files = try solutionContainer.decode([String].self, forKey: .files)
-        exercise = try solutionContainer.decode(SolutionExercise.self, forKey: .exercise)
-        let submissionContainer = try? solutionContainer.nestedContainer(keyedBy: SubmissionKeys.self, forKey: .submission)
+        id = try container.decode(String.self, forKey: .id)
+        url = try container.decode(String.self, forKey: .url)
+        fileDownloadBaseUrl = try container.decode(String.self, forKey: .fileDownloadBaseUrl)
+        files = try container.decode([String].self, forKey: .files)
+        exercise = try container.decode(SolutionExercise.self, forKey: .exercise)
+
+        // Handle nested submission key
+        let submissionContainer = try? container.nestedContainer(keyedBy: SubmissionKeys.self, forKey: .submission)
         submittedAt = try? submissionContainer?.decode(Date.self, forKey: .submittedAt)
     }
 }
 
-extension SolutionFile: Decodable {
-    enum CodingKeys: String, CodingKey {
-        case solution
-    }
-}
 

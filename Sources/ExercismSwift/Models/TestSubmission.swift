@@ -4,6 +4,7 @@
 
 import Foundation
 
+// TODO: is this necessary? where do we call encodable for this 
 public struct TestSubmission: Codable, Sendable, Hashable {
     public let uuid: String
     public let testsStatus: SubmissionTestsStatus
