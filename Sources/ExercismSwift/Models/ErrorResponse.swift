@@ -1,5 +1,5 @@
 import Foundation
 
-public struct ErrorResponse: Decodable {
-    public let error: ErrorDetail
+ struct ErrorResponse: Decodable {
+     let error: ErrorDetail
 }

@@ -1,19 +1,22 @@
 import Foundation
 
-public struct EntityIdentifier<Marker, T: Codable>: CustomStringConvertible {
-    public let rawValue: T
+typealias UUIDv4 = String
 
-    public init(_ rawValue: T) {
+struct EntityIdentifier<Marker, T: Codable>: CustomStringConvertible {
+    let rawValue: T
+
+    init(_ rawValue: T) {
         self.rawValue = rawValue
     }
 
-    public var description: String {
+    var description: String {
         "ID<\(Marker.self)>:\(rawValue)"
     }
 }
 
 extension EntityIdentifier: Equatable where T: Equatable {
-    public static func == (lhs: EntityIdentifier<Marker, T>, rhs: EntityIdentifier<Marker, T>) -> Bool {
+    static func == (lhs: EntityIdentifier<Marker, T>,
+                           rhs: EntityIdentifier<Marker, T>) -> Bool {
         lhs.rawValue == rhs.rawValue
     }
 }
@@ -23,19 +26,19 @@ extension EntityIdentifier: Hashable where T: Hashable {}
 // MARK: - Codable
 
 extension EntityIdentifier: Codable {
-    public init(from decoder: Decoder) throws {
+    init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         rawValue = try container.decode(T.self)
     }
 
-    public func encode(to encoder: Encoder) throws {
+    func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         try container.encode(rawValue)
     }
 }
 
 extension EntityIdentifier where T == UUIDv4 {
-    public init() {
+    init() {
         self.init(UUIDv4())
     }
 }

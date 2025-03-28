@@ -81,7 +81,7 @@ public protocol NetworkClient: AnyObject {
 /// This is the  default implementation of a network client that handles HTTP requests and responses.
 ///
 /// Supports GET, POST, PATCH, DELETE, and file download operations.
-public class DefaultNetworkClient: NetworkClient {
+ class DefaultNetworkClient: NetworkClient {
     /// JSON encoder used to encode request bodies.
     private let encoder: JSONEncoder
 
@@ -98,7 +98,7 @@ public class DefaultNetworkClient: NetworkClient {
 
     /// Initializes a network client with optional API token authentication.
     /// - Parameter apiToken: An optional API token for authorization.
-    public init(_ apiToken: String? = nil) {
+    init(_ apiToken: String? = nil) {
 
         encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .formatted(DateFormatter.iso8601Full)
@@ -116,7 +116,7 @@ public class DefaultNetworkClient: NetworkClient {
     }
 
     /// Returns the default HTTP headers used for requests.
-    public var headers: Network.HTTPHeaders {
+    var headers: Network.HTTPHeaders {
         defaultHeaders
     }
 
@@ -125,7 +125,7 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - url: The target URL for the request.
     ///   - headers: Optional custom headers for the request.
     ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
-    public func get<R: Decodable>(from url: URL,
+    func get<R: Decodable>(from url: URL,
                                   headers: Network.HTTPHeaders? = nil,
                                   completed: @escaping (Result<R, ExercismClientError>) -> Void) {
         let request = buildRequest(method: .GET, url: url, headers: headers)
@@ -139,7 +139,7 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - body: The request body to be sent.
     ///   - headers: Optional custom headers.
     ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
-    public func post<T: Encodable, R: Decodable>(to url: URL,
+    func post<T: Encodable, R: Decodable>(to url: URL,
                                                  body: T,
                                                  headers: Network.HTTPHeaders? = nil,
                                                  completed: @escaping (Result<R, ExercismClientError>) -> Void) {
@@ -165,7 +165,7 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - body: The request body to be sent.
     ///   - headers: Optional custom headers.
     ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
-    public func patch<T: Encodable, R: Decodable>(to url: URL,
+    func patch<T: Encodable, R: Decodable>(to url: URL,
                                                   body: T,
                                                   headers: Network.HTTPHeaders? = nil,
                                                   completed: @escaping (Result<R, ExercismClientError>) -> Void) {
@@ -193,7 +193,7 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - body: An optional request body to be sent.
     ///   - headers: Optional custom headers.
     ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
-    public func delete<R: Decodable, T: Encodable>(from url: URL,
+    func delete<R: Decodable, T: Encodable>(from url: URL,
                                                    body: T,
                                                    headers: Network.HTTPHeaders? = nil,
                                                    completed: @escaping (Result<R, ExercismClientError>) -> Void) {
@@ -223,7 +223,7 @@ public class DefaultNetworkClient: NetworkClient {
     ///   - destPath: The destination URL where the file should be saved.
     ///   - headers: Optional custom headers.
     ///   - completed: A completion handler returning a `Result` containing the file URL or an error.
-    public func download(from sourcePath: URL,
+    func download(from sourcePath: URL,
                          to destPath: URL,
                          headers: Network.HTTPHeaders? = [:],
                          completed: @escaping (Result<URL, ExercismClientError>) -> Void) {

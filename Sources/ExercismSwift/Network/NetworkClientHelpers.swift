@@ -1,8 +1,8 @@
 import Foundation
 
 /// A helper utility for handling network errors in the Exercism API client.
-public enum NetworkClientHelpers {
-
+enum NetworkClientHelpers {
+    
     /// Determines and extracts an `ExercismClientError` from the given network response.
     ///
     /// - If a network-related error is provided, it wraps it as a `genericError`.
@@ -14,16 +14,16 @@ public enum NetworkClientHelpers {
     ///   - response: The URL response received from the server.
     ///   - error: Any network-related error encountered.
     /// - Returns: An `ExercismClientError` if an error is detected, otherwise `nil`.
-    public static func extractError(data: Data?,
-                                    response: URLResponse?,
-                                    error: Error?) -> ExercismClientError? {
+    static func extractError(data: Data?,
+                             response: URLResponse?,
+                             error: Error?) -> ExercismClientError? {
         if let error = error {
             return .genericError(error)
         }
-
+        
         return extractError(data: data, response: response)
     }
-
+    
     /// Parses the HTTP response and extracts an `ExercismClientError` if an error is detected.
     /// - If the response status code is between 400 and 502, it attempts to decode the error response and extract an error message.
     /// - If decoding fails, it returns a generic HTTP error with the response status code.
@@ -38,7 +38,7 @@ public enum NetworkClientHelpers {
         guard let response = response as? HTTPURLResponse else {
             return .unsupportedResponseError
         }
-
+        
         if (400..<503).contains(response.statusCode) {
             if let data = data {
                 if let err = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
@@ -52,10 +52,10 @@ public enum NetworkClientHelpers {
                 return .genericError(Network.Errors.HTTPError(code: response.statusCode))
             }
         }
-
+        
         return nil
     }
-
+    
     /// Analyzes the HTTP response and error to determine if an `ExercismClientError` should be returned.
     /// - If a network-related error is provided, it wraps it as a `genericError`.
     /// - If the response is missing or invalid, it returns an `unsupportedResponseError`.
@@ -65,20 +65,20 @@ public enum NetworkClientHelpers {
     ///   - response: The URL response received from the server.
     ///   - error: Any network-related error encountered.
     /// - Returns: An `ExercismClientError` if an error is detected, otherwise `nil`.
-    public static func extractError(response: URLResponse?,
-                                    error: Error?) -> ExercismClientError? {
+    static func extractError(response: URLResponse?,
+                             error: Error?) -> ExercismClientError? {
         if let error = error {
             return .genericError(error)
         }
-
+        
         guard let response = response as? HTTPURLResponse else {
             return .unsupportedResponseError
         }
-
+        
         if (400..<503).contains(response.statusCode) {
             return .genericError(Network.Errors.HTTPError(code: response.statusCode))
         }
-
+        
         return nil
     }
 }

@@ -1,10 +1,10 @@
 import Foundation
 
 /// A utility class for constructing URLs for the Exercism API.
-public class URLBuilder {
+class URLBuilder {
     /// The base URL for all network requests.
     let base = Network.exercismBaseURL
-
+    
     /// Constructs a URL by replacing the `{identifier}` placeholder in the given path with the provided entity identifier.
     ///
     /// - Parameters:
@@ -13,18 +13,17 @@ public class URLBuilder {
     ///   - params: Optional query parameters to be appended to the URL.
     /// - Returns: A fully constructed `URL`.
     /// - Note: This method will terminate execution if the URL cannot be formed.
-    public func url<T>(
-        for path: ExercismClientPath,
-        identifier: EntityIdentifier<T, String>,
-        params: [String: String] = [:]) -> URL {
-            let newPath = path.rawValue.replacingOccurrences(of: "{identifier}", with: identifier.rawValue)
-            guard let url = URL(string: newPath, relativeTo: base) else {
-                fatalError("Invalid path, unable to create a URL: \(path)")
-            }
-
-            return buildURL(from: url, params: params)
+    func url<T>(for path: ExercismClientPath,
+                identifier: EntityIdentifier<T, String>,
+                params: [String: String] = [:]) -> URL {
+        let newPath = path.rawValue.replacingOccurrences(of: "{identifier}", with: identifier.rawValue)
+        guard let url = URL(string: newPath, relativeTo: base) else {
+            fatalError("Invalid path, unable to create a URL: \(path)")
         }
-
+        
+        return buildURL(from: url, params: params)
+    }
+    
     /// Constructs a URL by formatting the given path with optional arguments and appending query parameters.
     ///
     /// - Parameters:
@@ -33,17 +32,17 @@ public class URLBuilder {
     ///   - urlArgs: Variadic arguments used to format the path string.
     /// - Returns: A fully constructed `URL`.
     /// - Note: This method will terminate execution if the URL cannot be formed.
-    public func url(for path: ExercismClientPath,
-                    params: [String: String] = [:],
-                    urlArgs: CVarArg...) -> URL {
+    func url(for path: ExercismClientPath,
+             params: [String: String] = [:],
+             urlArgs: CVarArg...) -> URL {
         let path = String(format: path.rawValue, arguments: urlArgs)
         guard let url = URL(string: path, relativeTo: base) else {
             fatalError("Invalid path, unable to create a URL: \(path)")
         }
-
+        
         return buildURL(from: url, params: params)
     }
-
+    
     /// Appends query parameters to a given URL.
     ///
     /// - Parameters:
@@ -55,17 +54,17 @@ public class URLBuilder {
         guard var components = URLComponents(url: url, resolvingAgainstBaseURL: true) else {
             fatalError("Invalid URL, unable to build components path")
         }
-
+        
         if !params.isEmpty {
             components.queryItems = params.map {
                 URLQueryItem(name: $0.key, value: $0.value)
             }
         }
-
+        
         guard let result = components.url else {
             fatalError("Unable to create URL from components (\(components))")
         }
-
+        
         return result
     }
 }

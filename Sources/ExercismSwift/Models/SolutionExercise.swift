@@ -17,7 +17,7 @@ public struct SolutionExercise: Sendable, Decodable {
     }
 }
 
-public struct SolutionTrack: Decodable {
+public struct SolutionTrack: Decodable, Sendable {
     public let id: String
     public let language: String
 }

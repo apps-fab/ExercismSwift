@@ -1,7 +1,7 @@
 import Foundation
 
 extension DateFormatter {
-    public static let iso8601Full: DateFormatter = {
+    static let iso8601Full: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         formatter.calendar = Calendar(identifier: .iso8601)
@@ -10,7 +10,7 @@ extension DateFormatter {
         return formatter
     }()
 
-    public static let iso8601DateOnly: DateFormatter = {
+    static let iso8601DateOnly: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
         formatter.calendar = Calendar(identifier: .iso8601)

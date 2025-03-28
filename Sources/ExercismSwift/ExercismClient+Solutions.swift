@@ -77,7 +77,7 @@ extension ExercismClient {
                 solutionManager.download { url, error in
                     if let url = url {
                         do {
-                            let exerciseDocument = try ExerciseDocument(exerciseDirectory: url,
+                            let exerciseDocument = try ExerciseDocument(with: url,
                                                                         solution: solutionResponse.solution)
                             completed(.success(exerciseDocument))
                         } catch let error {
