@@ -33,6 +33,7 @@ extension LogLevel: Comparable {
         return lhs.naturalIntegralValue < rhs.naturalIntegralValue
     }
 }
+
 protocol LoggerHandler: AnyObject {
     func log(level: LogLevel, message: String)
 }

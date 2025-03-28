@@ -8,13 +8,13 @@ import Foundation
 class SolutionManager {
     /// The `SolutionFile` downloaded from  `downloadSolution`
     let solution: SolutionFile
-    
+
     /// The network client used for downloading files.
     let client: NetworkClient
-    
+
     /// The file manager responsible for handling file operations.
     let fileManager: FileManager
-    
+
     /// Initializes a new `SolutionManager` instance.
     ///
     /// - Parameters:
@@ -28,7 +28,7 @@ class SolutionManager {
         self.client = client
         self.fileManager = fileManager
     }
-    
+
     /// Downloads all solution files to a local directory.
     ///
     /// - Parameter completed: A closure that returns the local directory URL or an error.
@@ -37,31 +37,35 @@ class SolutionManager {
     func download(_ completed: @escaping (URL?, ExercismClientError?) -> Void) {
         let dispatchGroup = DispatchGroup()
         var error: ExercismClientError?
-        
+
         do {
             let solutionDir = try getOrCreateSolutionDir()
-            
+
             for file in solution.files {
                 dispatchGroup.enter()
                 var fileComponents = file.split(separator: "/")
                 let fileLen = fileComponents.count
                 var destPath = solutionDir
-                let fileName = fileComponents.last!.description
-                
+                guard let fileName = fileComponents.last?.description else {
+                    error = ExercismClientError.builderError(message: "Error creating file name")
+                    return
+                }
+
                 if fileLen > 1 {
                     fileComponents.removeLast()
                     destPath = solutionDir
-                        .appendingPathComponent(fileComponents.joined(separator: "/"), isDirectory: true)
+                        .appendingPathComponent(fileComponents
+                            .joined(separator: "/"), isDirectory: true)
                     try fileManager.createDirectory(atPath: destPath.path,
                                                     withIntermediateDirectories: true)
                 }
-                
+
                 downloadFile(at: file,
                              to: destPath.appendingPathComponent(fileName)) { _ in
                     dispatchGroup.leave()
                 }
             }
-            
+
             dispatchGroup.notify(queue: DispatchQueue.main) {
                 if let error = error {
                     completed(nil, error)
@@ -73,7 +77,7 @@ class SolutionManager {
             completed(nil, .builderError(message: error.localizedDescription))
         }
     }
-    
+
     /// Retrieves or creates the local directory for storing solution files.
     ///
     /// - Returns: The URL of the solution directory.
@@ -83,17 +87,17 @@ class SolutionManager {
                                              in: .userDomainMask,
                                              appropriateFor: nil,
                                              create: true)
-        
+
         let solutionDir = docsFolder
             .appendingPathComponent("\(solution.exercise.trackId)/\(solution.exercise.id)/", isDirectory: true)
-        
+
         if !fileManager.fileExists(atPath: solutionDir.relativePath) {
             try fileManager.createDirectory(atPath: solutionDir.path, withIntermediateDirectories: true)
         }
-        
+
         return solutionDir
     }
-    
+
     /// Downloads a single file from the solution's file download URL.
     ///
     /// - Parameters:

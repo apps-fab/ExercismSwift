@@ -21,7 +21,7 @@ extension ExercismClient {
                            headers: headers(),
                            completed: completed)
     }
-
+    
     /// Retrieves the `TestRunResponse`
     ///
     /// - Parameters:
@@ -34,7 +34,7 @@ extension ExercismClient {
                           headers: headers(),
                           completed: completed)
     }
-
+    
     /// Cancels an ongoing test run.
     ///
     /// - Parameters:
@@ -46,7 +46,7 @@ extension ExercismClient {
                           headers: headers(),
                           completed: completed)
     }
-
+    
     /// Submits a solution for review.
     ///
     /// This action is performed after successfully running and passing all tests.
@@ -61,7 +61,7 @@ extension ExercismClient {
                 completed(.failure(.builderError(message: "Invalid URL")))
                 return
             }
-
+            
             networkClient.post(
                 to: url,
                 body: "",
@@ -69,7 +69,7 @@ extension ExercismClient {
                 completed: completed
             )
         }
-
+    
     /// Marks a solution as complete, optionally publishing it and specifying an iteration.
     ///
     /// This action is performed after submitting the solution and successfully passing all tests.

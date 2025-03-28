@@ -3,7 +3,7 @@ import Foundation
 typealias DebugEnvironment = ExercismSwiftEnvironment
 
 struct ExercismSwiftEnvironment {
-    static var log = Logger(handler: PrintLogHandler(), level: .info)
+    static var log = Logger(handler: PrintLogHandler(), level: .trace)
     static var logHandler: LoggerHandler {
         get { log.handler }
         set { log.handler = newValue }
