@@ -5,7 +5,7 @@
 import Foundation
 
 public struct IterationLinks: Codable, Sendable {
-    public let selfLink: String
+    public let `self`: String
     public let automatedFeedback: String
     public let delete: String
     public let solution: String

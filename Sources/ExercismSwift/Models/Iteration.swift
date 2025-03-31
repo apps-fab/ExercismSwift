@@ -6,7 +6,7 @@ import Foundation
 
 public struct Iteration: Decodable, Sendable {
     public let uuid: String
-    public let submissionUUID: String
+    public let submissionUuid: String
     public let idx: Int
     public let status: IterationStatus
     public let numEssentialAutomatedComments: Int

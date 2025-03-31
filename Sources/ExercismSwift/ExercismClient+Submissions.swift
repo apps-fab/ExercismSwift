@@ -54,16 +54,14 @@ extension ExercismClient {
     /// - Parameters:
     ///   - link: The URL used to submit the solution.
     ///   - completed: A completion handler returning a `Result` with either a `SubmitSolutionResponse` on success or an `ExercismClientError` on failure.
-    public func submitSolution(
-        withLink link: String,
+    public func submitSolution(withLink link: String,
         completed: @escaping (Result<SubmitSolutionResponse, ExercismClientError>) -> Void) {
             guard let url = URL(string: link) else {
                 completed(.failure(.builderError(message: "Invalid URL")))
                 return
             }
             
-            networkClient.post(
-                to: url,
+            networkClient.post(to: url,
                 body: "",
                 headers: headers(),
                 completed: completed
