@@ -14,4 +14,5 @@ public enum IterationStatus: String, Codable, Sendable {
     case actionableAutomatedFeedback = "actionable_automated_feedback"
     case nonActionableAutomatedFeedback = "non_actionable_automated_feedback"
     case noAutomatedFeedback = "no_automated_feedback"
+    case celebratoryAutomatedFeedback = "celebratory_automated_feedback"
 }

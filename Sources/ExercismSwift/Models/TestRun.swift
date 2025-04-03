@@ -17,19 +17,4 @@ public struct TestRun: Decodable, Sendable {
     public let tasks: [ExercismTask]
     public let highlightjsLanguage: String
     public let links: ResultLink
-
-    private enum CodingKeys: String, CodingKey {
-        case uuid
-        case submissionUuid = "submission_uuid"
-        case version
-        case status
-        case message
-        case messageHtml = "message_html"
-        case output
-        case outputHtml = "output_html"
-        case tests
-        case tasks
-        case highlightjsLanguage = "highlightjs_language"
-        case links
-    }
 }

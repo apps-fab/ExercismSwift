@@ -12,10 +12,4 @@ public struct ExerciseMetadata: Codable {
     public let handle: String
     public let isRequester: Bool
     public let autoApprove: Bool
-
-    private enum CodingKeys: String, CodingKey {
-        case track, exercise, id, url, handle
-        case isRequester = "is_requester"
-        case autoApprove = "auto_approve"
-    }
 }

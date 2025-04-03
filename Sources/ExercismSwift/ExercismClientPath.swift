@@ -5,7 +5,7 @@
 //  Created by Angie Mugo on 26/09/2022.
 //
 
-public enum ExercismClientPath:  String {
+public enum ExercismClientPath: String {
     case exercises = "/v2/tracks/%@/exercises"
     case tracks = "/v2/tracks"
     case validateToken = "/v2/validate_token"
@@ -15,4 +15,5 @@ public enum ExercismClientPath:  String {
     case testSubmission = "/v2/solutions/%@/submissions"
     case iteration = "/v2/solutions/%@?sideload[]=iterations"
     case completeSolution = "/v2/solutions/%@/complete"
+    case initialFiles = "/v2/solutions/%@/initial_files"
 }

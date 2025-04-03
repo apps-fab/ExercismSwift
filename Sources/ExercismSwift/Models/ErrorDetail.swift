@@ -4,11 +4,7 @@
 
 import Foundation
 
-public struct ErrorDetail {
-    public let type: String
-    public let message: String
+ struct ErrorDetail: Decodable {
+     let type: String
+     let message: String
 }
-
-extension ErrorDetail: Decodable {}
-
-

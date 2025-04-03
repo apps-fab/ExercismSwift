@@ -1,6 +1,6 @@
 import Foundation
 
-public enum LogLevel: String, CaseIterable {
+enum LogLevel: String, CaseIterable {
     case trace
     case debug
     case info
@@ -29,68 +29,66 @@ extension LogLevel {
 }
 
 extension LogLevel: Comparable {
-    public static func < (lhs: LogLevel, rhs: LogLevel) -> Bool {
+    static func < (lhs: LogLevel, rhs: LogLevel) -> Bool {
         return lhs.naturalIntegralValue < rhs.naturalIntegralValue
     }
 }
 
-public protocol LoggerHandler: AnyObject {
+protocol LoggerHandler: AnyObject {
     func log(level: LogLevel, message: String)
 }
 
-public final class Logger {
+final class Logger {
     var handler: LoggerHandler
     var level: LogLevel
-
+    
     init(handler: LoggerHandler, level: LogLevel) {
         self.handler = handler
         self.level = level
     }
-
-    public func trace(_ message: @autoclosure () -> String) {
+    
+    func trace(_ message: @autoclosure () -> String) {
         log(level: .trace, message())
     }
-
-    public func debug(_ message: @autoclosure () -> String) {
+    
+    func debug(_ message: @autoclosure () -> String) {
         log(level: .debug, message())
     }
-
-    public func info(_ message: @autoclosure () -> String) {
+    
+    func info(_ message: @autoclosure () -> String) {
         log(level: .info, message())
     }
-
-    public func notice(_ message: @autoclosure () -> String) {
+    
+    func notice(_ message: @autoclosure () -> String) {
         log(level: .notice, message())
     }
-
-    public func warning(_ message: @autoclosure () -> String) {
+    
+    func warning(_ message: @autoclosure () -> String) {
         log(level: .warning, message())
     }
-
-    public func error(_ message: @autoclosure () -> String) {
+    
+    func error(_ message: @autoclosure () -> String) {
         log(level: .error, message())
     }
-
-    func log(
-        level: LogLevel,
-        _ message: @autoclosure () -> String
-    ) {
+    
+    func log(level: LogLevel,
+             _ message: @autoclosure () -> String) {
         if self.level <= level {
             self.handler.log(level: level, message: message())
         }
     }
 }
 
-public class EmptyLogHandler: LoggerHandler {
-    public init() {}
+class EmptyLogHandler: LoggerHandler {
+    init() {}
     
-    public func log(level: LogLevel, message: String) {}
+    func log(level: LogLevel, message: String) {}
 }
 
-public class PrintLogHandler: LoggerHandler {
-    public init() {}
-
-    public func log(level: LogLevel, message: String) {
+class PrintLogHandler: LoggerHandler {
+    init() {}
+    
+    func log(level: LogLevel, message: String) {
         print("ExercismSwift \(level.rawValue.uppercased()): \(message)")
     }
 }

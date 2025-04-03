@@ -5,17 +5,19 @@
 
 import Foundation
 
-public struct SolutionFileData: Encodable, Sendable {
+public struct SolutionFileData: Codable, Sendable {
     public let filename: String
     public let content: String
-    public let type: SolutionFileType
+    public let type: String
     public let digest: String?
 
-    public init(fileName: String, content: String, type: SolutionFileType = SolutionFileType.exercise, digest: String? = nil) {
-        filename = fileName
+    public init(fileName: String,
+                content: String,
+                type: SolutionFileType = SolutionFileType.exercise,
+                digest: String? = nil) {
+        self.filename = fileName
         self.content = content
-        self.type = type
+        self.type = type.rawValue
         self.digest = digest
     }
 }
-

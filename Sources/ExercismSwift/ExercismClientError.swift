@@ -7,7 +7,7 @@ public enum ExercismClientError: Error {
     case decodingError(Error)
     case unsupportedResponseError
     case builderError(message: String)
-
+    
     public var description: String {
         switch self {
         case .genericError(let underlyingError):
