@@ -26,4 +26,20 @@ public protocol ExercismClientType: AnyObject {
     func initialSolution(for track: String,
                          completed: @escaping (Result<InitialFiles,
                                                ExercismClientError>) -> Void)
+    func getIterations(for solutionId: String,
+                       completed: @escaping (Result<IterationResponse, ExercismClientError>) -> Void)
+    func badges(completed: @escaping (Result<ListResponse<Badge>,
+                                      ExercismClientError>) -> Void)
+    func getTestRun(withLink link: String,
+                    completed: @escaping (Result<TestRunResponse,
+                                          ExercismClientError>) -> Void)
+    func submitSolution(withLink link: String,
+                        completed: @escaping (Result<SubmitSolutionResponse, ExercismClientError>) -> Void)
+    func completeSolution(for solution: String,
+                          publish: Bool,
+                          iteration: Int?,
+                          completed: @escaping (Result<CompletedSolution, ExercismClientError>) -> Void)
+    func runTest(for solution: String,
+                        with contents: [SolutionFileData],
+                        completed: @escaping (Result<TestSubmission, ExercismClientError>) -> Void)
 }

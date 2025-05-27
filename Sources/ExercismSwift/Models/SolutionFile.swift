@@ -13,6 +13,6 @@ public struct SolutionFile: Decodable, Sendable {
     public let submittedAt: Date?
 }
 
-struct SolutionResponse: Decodable {
+public struct SolutionResponse: Decodable {
     public let solution: SolutionFile
 }

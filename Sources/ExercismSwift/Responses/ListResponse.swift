@@ -4,6 +4,11 @@ public struct ListResponse<T>: Decodable where T: Decodable {
     public var results: [T] = []
     public var meta: ListMeta? = nil
 
+    public init(results: [T] = [], meta: ListMeta? = nil) {
+        self.results = results
+        self.meta = meta
+    }
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: DynamicKey.self)
         for key in container.allKeys {
