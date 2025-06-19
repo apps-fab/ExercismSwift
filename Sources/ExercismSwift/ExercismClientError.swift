@@ -7,6 +7,11 @@ public enum ExercismClientError: Error {
     case decodingError(Error)
     case unsupportedResponseError
     case builderError(message: String)
+    case notConnectedToInternet
+    case timedOut
+    case cancelled
+    case badURL
+    case invalidRequestURL(URLError.Code)
     
     public var description: String {
         switch self {
@@ -22,6 +27,16 @@ public enum ExercismClientError: Error {
             return "Received an unsupported response"
         case .builderError(let message):
             return "Builder Error: \(message)"
+        case .notConnectedToInternet:
+            return "No internet connection"
+        case .timedOut:
+            return "The request timed out"
+        case .cancelled:
+            return "The request was cancelled"
+        case .badURL:
+            return "The request URL was invalid"
+        case .invalidRequestURL(let code):
+            return "Invalid request URL (URLError.Code: \(code.rawValue))"
         }
     }
 }

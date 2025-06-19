@@ -4,115 +4,99 @@
 
 import Foundation
 
-/// A manager responsible for handling solution file downloads and organization.
+/// A manager responsible for downloading and organizing solution files locally.
 class SolutionManager {
-    /// The `SolutionFile` downloaded from  `downloadSolution`
+
+    /// The solution metadata containing file paths and download information.
     let solution: SolutionFile
 
-    /// The network client used for downloading files.
+    /// The network client used to download files.
     let client: NetworkClient
 
-    /// The file manager responsible for handling file operations.
+    /// The file manager used to manage local file system operations.
     let fileManager: FileManager
 
     /// Initializes a new `SolutionManager` instance.
     ///
     /// - Parameters:
-    ///   - solution: The `SolutionFile` containing file details.
-    ///   - client: The `NetworkClient` used for downloading solution files.
-    ///   - fileManager: The `FileManager` instance for handling local file operations. Defaults to `FileManager.default`.
-    init(with solution: SolutionFile,
-         client: NetworkClient,
-         fileManager: FileManager = FileManager.default) {
+    ///   - solution: The `SolutionFile` describing the exercise and associated files.
+    ///   - client: The `NetworkClient` used for downloading the files.
+    ///   - fileManager: A custom `FileManager` for managing file paths (defaults to `.default`).
+    init(
+        with solution: SolutionFile,
+        client: NetworkClient,
+        fileManager: FileManager = .default
+    ) {
         self.solution = solution
         self.client = client
         self.fileManager = fileManager
     }
 
-    /// Downloads all solution files to a local directory.
+    /// Downloads all solution files and stores them in a local directory.
     ///
-    /// - Parameter completed: A closure that returns the local directory URL or an error.
-    ///
-    /// - Note: This method creates the required directory structure before downloading files.
-    func download(_ completed: @escaping (URL?, ExercismClientError?) -> Void) {
-        let dispatchGroup = DispatchGroup()
-        var error: ExercismClientError?
+    /// - Returns: The URL of the local directory containing the downloaded files.
+    /// - Throws: An `ExercismClientError` if the directory creation or download fails.
+    func download() async throws(ExercismClientError) -> URL {
+        let solutionDir = try getOrCreateSolutionDir()
 
-        do {
-            let solutionDir = try getOrCreateSolutionDir()
+        for file in solution.files {
+            var components = file.split(separator: "/")
+            guard let fileName = components.popLast()?.description else {
+                throw ExercismClientError.builderError(message: "Invalid file name in path: \(file)")
+            }
 
-            for file in solution.files {
-                dispatchGroup.enter()
-                var fileComponents = file.split(separator: "/")
-                let fileLen = fileComponents.count
-                var destPath = solutionDir
-                guard let fileName = fileComponents.last?.description else {
-                    error = ExercismClientError.builderError(message: "Error creating file name")
-                    return
-                }
-
-                if fileLen > 1 {
-                    fileComponents.removeLast()
-                    destPath = solutionDir
-                        .appendingPathComponent(fileComponents
-                            .joined(separator: "/"), isDirectory: true)
-                    try fileManager.createDirectory(atPath: destPath.path,
-                                                    withIntermediateDirectories: true)
-                }
-
-                downloadFile(at: file,
-                             to: destPath.appendingPathComponent(fileName)) { _ in
-                    dispatchGroup.leave()
+            var destinationDir = solutionDir
+            if !components.isEmpty {
+                destinationDir = solutionDir.appendingPathComponent(components.joined(separator: "/"), isDirectory: true)
+                do {
+                    try fileManager.createDirectory(atPath: destinationDir.path, withIntermediateDirectories: true)
+                } catch {
+                    throw ExercismClientError.builderError(message: "Failed to create local solution directory: \(error.localizedDescription)")
                 }
             }
 
-            dispatchGroup.notify(queue: DispatchQueue.main) {
-                if let error = error {
-                    completed(nil, error)
-                } else {
-                    completed(solutionDir, nil)
-                }
-            }
-        } catch let error {
-            completed(nil, .builderError(message: error.localizedDescription))
-        }
-    }
-
-    /// Retrieves or creates the local directory for storing solution files.
-    ///
-    /// - Returns: The URL of the solution directory.
-    /// - Throws: An error if the directory cannot be created.
-    private func getOrCreateSolutionDir() throws -> URL {
-        let docsFolder = try fileManager.url(for: .documentDirectory,
-                                             in: .userDomainMask,
-                                             appropriateFor: nil,
-                                             create: true)
-
-        let solutionDir = docsFolder
-            .appendingPathComponent("\(solution.exercise.trackId)/\(solution.exercise.id)/", isDirectory: true)
-
-        if !fileManager.fileExists(atPath: solutionDir.relativePath) {
-            try fileManager.createDirectory(atPath: solutionDir.path, withIntermediateDirectories: true)
+            let destinationURL = destinationDir.appendingPathComponent(fileName)
+            _ = try await downloadFile(at: file, to: destinationURL)
         }
 
         return solutionDir
     }
 
-    /// Downloads a single file from the solution's file download URL.
+    /// Ensures the solution directory exists or creates it.
+    ///
+    /// - Returns: The URL of the local solution directory.
+    /// - Throws: An `ExercismClientError` if directory creation fails.
+    private func getOrCreateSolutionDir() throws(ExercismClientError) -> URL {
+        do {
+            let documents = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+
+            let solutionDir = documents
+                .appendingPathComponent(solution.exercise.trackId)
+                .appendingPathComponent(solution.exercise.id, isDirectory: true)
+
+            if !fileManager.fileExists(atPath: solutionDir.path) {
+                try fileManager.createDirectory(at: solutionDir, withIntermediateDirectories: true)
+            }
+
+            return solutionDir
+        } catch {
+            throw ExercismClientError.builderError(message: "Failed to create local solution directory: \(error.localizedDescription)")
+        }
+    }
+
+    /// Downloads a single file from the provided solution path.
     ///
     /// - Parameters:
-    ///   - path: The file path to download.
-    ///   - destination: The local destination URL for the downloaded file.
-    ///   - completed: A closure that returns a result containing the file URL or an error.
-    private func downloadFile(at path: String,
-                              to destination: URL,
-                              completed: @escaping (Result<URL, ExercismClientError>) -> Void) {
-        let url = URL(string: path,
-                      relativeTo: URL(string: solution.fileDownloadBaseUrl))!
-        client.download(from: url,
-                        to: destination,
-                        headers: [:]) { result in
-            completed(result)
+    ///   - path: The file path relative to the base URL.
+    ///   - destination: The full local file URL to save the file to.
+    /// - Returns: The local file URL after download completes.
+    /// - Throws: An `ExercismClientError` if the download fails.
+    private func downloadFile(at path: String, to destination: URL) async throws(ExercismClientError) -> URL {
+        guard let baseURL = URL(string: solution.fileDownloadBaseUrl),
+              let fileURL = URL(string: path, relativeTo: baseURL) else {
+            throw ExercismClientError.builderError(message: "Invalid download URL for path: \(path)")
         }
+
+        return try await client.download(from: fileURL, to: destination, headers: [:])
     }
 }

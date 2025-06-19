@@ -2,28 +2,7 @@ import Foundation
 
 /// A helper utility for handling network errors in the Exercism API client.
 enum NetworkClientHelpers {
-    
-    /// Determines and extracts an `ExercismClientError` from the given network response.
-    ///
-    /// - If a network-related error is provided, it wraps it as a `genericError`.
-    /// - Otherwise, it delegates error extraction to `extractError(data:response:)`,
-    ///   which inspects the response status code and decodes error messages if available.
-    ///
-    /// - Parameters:
-    ///   - data: The response data from the network request, if available.
-    ///   - response: The URL response received from the server.
-    ///   - error: Any network-related error encountered.
-    /// - Returns: An `ExercismClientError` if an error is detected, otherwise `nil`.
-    static func extractError(data: Data?,
-                             response: URLResponse?,
-                             error: Error?) -> ExercismClientError? {
-        if let error = error {
-            return .genericError(error)
-        }
-        
-        return extractError(data: data, response: response)
-    }
-    
+
     /// Parses the HTTP response and extracts an `ExercismClientError` if an error is detected.
     /// - If the response status code is between 400 and 502, it attempts to decode the error response and extract an error message.
     /// - If decoding fails, it returns a generic HTTP error with the response status code.
@@ -33,8 +12,8 @@ enum NetworkClientHelpers {
     ///   - data: The response data from the network request, if available.
     ///   - response: The URL response received from the server.
     /// - Returns: An `ExercismClientError` if an error is detected, otherwise `nil`.
-    private static func extractError(data: Data?,
-                                     response: URLResponse?) -> ExercismClientError? {
+    static func extractError(data: Data?,
+                                     response: URLResponse?) -> ExercismClientError {
         guard let response = response as? HTTPURLResponse else {
             return .unsupportedResponseError
         }
@@ -53,32 +32,48 @@ enum NetworkClientHelpers {
             }
         }
         
-        return nil
+        return .genericError(Network.Errors.HTTPError(code: response.statusCode))
     }
     
-    /// Analyzes the HTTP response and error to determine if an `ExercismClientError` should be returned.
-    /// - If a network-related error is provided, it wraps it as a `genericError`.
-    /// - If the response is missing or invalid, it returns an `unsupportedResponseError`.
-    /// - If the response status code is between 400 and 502, it returns a `genericError` with the corresponding HTTP status code.
+    /// Maps a generic `Error` to a specific `ExercismClientError` with detailed handling for known error types.
     ///
-    /// - Parameters:
-    ///   - response: The URL response received from the server.
-    ///   - error: Any network-related error encountered.
-    /// - Returns: An `ExercismClientError` if an error is detected, otherwise `nil`.
-    static func extractError(response: URLResponse?,
-                             error: Error?) -> ExercismClientError? {
-        if let error = error {
+    /// This function inspects the type of the error and maps it as follows:
+    /// - If the error is a `DecodingError`, returns `.decodingError`.
+    /// - If the error is an `EncodingError`, returns `.bodyEncodingError`.
+    /// - If the error is a `URLError`, inspects the code and returns:
+    ///     - `.notConnectedToInternet` for `.notConnectedToInternet`
+    ///     - `.timedOut` for `.timedOut`
+    ///     - `.cancelled` for `.cancelled`
+    ///     - `.badURL` for `.badURL`
+    ///     - `.invalidRequestURL(code)` for all other `URLError` codes
+    /// - All other errors are returned as `.genericError`.
+    ///
+    /// - Parameter error: The error encountered during the network operation.
+    /// - Returns: A corresponding `ExercismClientError`.
+    static func extractError(error: Error) -> ExercismClientError {
+        switch error {
+        case let decodingError as DecodingError:
+            return .decodingError(decodingError)
+
+        case let encodingError as EncodingError:
+            return .bodyEncodingError(encodingError)
+
+        case let urlError as URLError:
+            switch urlError.code {
+            case .notConnectedToInternet:
+                return .notConnectedToInternet
+            case .timedOut:
+                return .timedOut
+            case .cancelled:
+                return .cancelled
+            case .badURL:
+                return .badURL
+            default:
+                return .invalidRequestURL(urlError.code)
+            }
+
+        default:
             return .genericError(error)
         }
-        
-        guard let response = response as? HTTPURLResponse else {
-            return .unsupportedResponseError
-        }
-        
-        if (400..<503).contains(response.statusCode) {
-            return .genericError(Network.Errors.HTTPError(code: response.statusCode))
-        }
-        
-        return nil
     }
 }

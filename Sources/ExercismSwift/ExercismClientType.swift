@@ -1,45 +1,34 @@
 import Foundation
 
 public protocol ExercismClientType: AnyObject {
-    func tracks(completed: @escaping (Result<ListResponse<Track>,
-                                      ExercismClientError>) -> Void)
+    func tracks() async throws -> ListResponse<Track>
     
-    func exercises(for track: String,
-                   completed: @escaping (Result<ListResponse<Exercise>,
-                                         ExercismClientError>) -> Void)
+    func exercises(for track: String) async throws -> ListResponse<Exercise>
     
-    func validateToken(completed: @escaping (Result<ValidateTokenResponse,
-                                             ExercismClientError>) -> Void)
+    func validateToken() async throws -> ValidateTokenResponse
     
     func solutions(for track: String?,
                    withStatus status: SolutionStatus?,
-                   mentoringStatus: MentoringStatus?,
-                   completed: @escaping (Result<ListResponse<Solution>,
-                                         ExercismClientError>) -> Void)
+                   mentoringStatus: MentoringStatus?) async throws -> ListResponse<Solution>
     
     func downloadSolution(with id: String,
                           for track: String,
-                          exercise: String,
-                          completed: @escaping (Result<ExerciseDocument,
-                                                ExercismClientError>) -> Void)
+                          exercise: String) async throws -> ExerciseDocument
     
-    func initialSolution(for track: String,
-                         completed: @escaping (Result<InitialFiles,
-                                               ExercismClientError>) -> Void)
-    func getIterations(for solutionId: String,
-                       completed: @escaping (Result<IterationResponse, ExercismClientError>) -> Void)
-    func badges(completed: @escaping (Result<ListResponse<Badge>,
-                                      ExercismClientError>) -> Void)
-    func getTestRun(withLink link: String,
-                    completed: @escaping (Result<TestRunResponse,
-                                          ExercismClientError>) -> Void)
-    func submitSolution(withLink link: String,
-                        completed: @escaping (Result<SubmitSolutionResponse, ExercismClientError>) -> Void)
+    func initialSolution(for track: String) async throws -> InitialFiles
+    
+    func getIterations(for solutionId: String) async throws -> IterationResponse
+    
+    func badges() async throws -> ListResponse<Badge>
+    
+    func getTestRun(withLink link: String) async throws -> TestRunResponse
+    
+    func submitSolution(withLink link: String) async throws -> SubmitSolutionResponse
+    
     func completeSolution(for solution: String,
                           publish: Bool,
-                          iteration: Int?,
-                          completed: @escaping (Result<CompletedSolution, ExercismClientError>) -> Void)
+                          iteration: Int?) async throws -> CompletedSolution
+    
     func runTest(for solution: String,
-                        with contents: [SolutionFileData],
-                        completed: @escaping (Result<TestSubmission, ExercismClientError>) -> Void)
+                 with contents: [SolutionFileData]) async throws -> TestSubmission
 }
