@@ -14,7 +14,7 @@ extension ExercismClient {
     ///
     /// - Returns: A `ListResponse<Badge>` containing the earned badges.
     /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
-    public func badges() async throws -> ListResponse<Badge> {
+    public func badges() async throws(ExercismClientError) -> ListResponse<Badge> {
         try await networkClient.get(from: urlBuilder.url(for: ExercismClientPath.badges,
                                                          params: [:]),
                                     headers: headers())

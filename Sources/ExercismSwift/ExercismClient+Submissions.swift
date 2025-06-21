@@ -14,7 +14,7 @@ extension ExercismClient {
     /// - Returns: A `TestSubmission` result from the test run.
     /// - Throws: An `ExercismClientError` if the request or decoding fails.
     public func runTest(for solution: String,
-                        with contents: [SolutionFileData]) async throws -> TestSubmission {
+                        with contents: [SolutionFileData]) async throws(ExercismClientError) -> TestSubmission {
         let files = SolutionTestFiles(files: contents)
         return try await networkClient.post(to: urlBuilder.url(for: .testSubmission,
                                                                urlArgs: solution),
@@ -27,7 +27,7 @@ extension ExercismClient {
     /// - Parameter link: The URL link to fetch the test run status.
     /// - Returns: A `TestRunResponse` representing the current status of the test run.
     /// - Throws: An `ExercismClientError` if the request or decoding fails.
-    public func getTestRun(withLink link: String) async throws -> TestRunResponse {
+    public func getTestRun(withLink link: String) async throws(ExercismClientError) -> TestRunResponse {
         guard let url = URL(string: link) else {
             throw ExercismClientError.builderError(message: "Invalid URL")
         }
@@ -39,7 +39,7 @@ extension ExercismClient {
     /// - Parameter link: The URL link to cancel the test run.
     /// - Returns: A `TestSubmission` representing the canceled test run.
     /// - Throws: An `ExercismClientError` if the request or decoding fails.
-    public func cancelTestRun(withLink link: String) async throws -> TestSubmission {
+    public func cancelTestRun(withLink link: String) async throws(ExercismClientError) -> TestSubmission {
         guard let url = URL(string: link) else {
             throw ExercismClientError.builderError(message: "Invalid URL")
         }
@@ -51,7 +51,7 @@ extension ExercismClient {
     /// - Parameter link: The URL used to submit the solution.
     /// - Returns: A `SubmitSolutionResponse` indicating the result of the submission.
     /// - Throws: An `ExercismClientError` if the request or decoding fails.
-    public func submitSolution(withLink link: String) async throws -> SubmitSolutionResponse {
+    public func submitSolution(withLink link: String) async throws(ExercismClientError) -> SubmitSolutionResponse {
         guard let url = URL(string: link) else {
             throw ExercismClientError.builderError(message: "Invalid URL")
         }
@@ -68,7 +68,7 @@ extension ExercismClient {
     /// - Throws: An `ExercismClientError` if the request or decoding fails.
     public func completeSolution(for solution: String,
                                  publish: Bool = false,
-                                 iteration: Int? = nil) async throws -> CompletedSolution {
+                                 iteration: Int? = nil) async throws(ExercismClientError) -> CompletedSolution {
         let payload = CompleteSolutionPayload(publish: publish, iteration: iteration)
         return try await networkClient.patch(to: urlBuilder.url(for: .completeSolution,
                                                                 urlArgs: solution),

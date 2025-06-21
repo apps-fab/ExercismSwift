@@ -8,11 +8,6 @@ public enum Network {
     public enum HTTPMethod: String {
         case GET, POST, PUT, PATCH, DELETE
     }
-    
-    public enum Errors: Error {
-        case HTTPError(code: Int)
-        case genericError(Error)
-    }
 }
 
 /// A protocol defining a network client for making HTTP requests.
@@ -322,7 +317,8 @@ class DefaultNetworkClient: NetworkClient {
             guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
                 throw NetworkClientHelpers.extractError(data: data, response: response)
             }
-            let result = try JSONDecoder().decode(T.self, from: data)
+            DebugEnvironment.log.trace(String(data: data, encoding: .utf8) ?? "")
+            let result = try self.decoder.decode(T.self, from: data)
             return result
         } catch {
             throw NetworkClientHelpers.extractError(error: error)

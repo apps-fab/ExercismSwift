@@ -19,20 +19,14 @@ enum NetworkClientHelpers {
         }
         
         if (400..<503).contains(response.statusCode) {
-            if let data = data {
-                if let err = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+            if let data = data , let err = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
                     return .apiError(code: ExercismErrorCode(rawValue: err.error.type) ?? .genericError,
                                      type: err.error.type,
                                      message: err.error.message)
-                } else {
-                    return .genericError(Network.Errors.HTTPError(code: response.statusCode))
-                }
-            } else {
-                return .genericError(Network.Errors.HTTPError(code: response.statusCode))
             }
         }
         
-        return .genericError(Network.Errors.HTTPError(code: response.statusCode))
+        return .genericError("Unknown error occurred")
     }
     
     /// Maps a generic `Error` to a specific `ExercismClientError` with detailed handling for known error types.
@@ -73,7 +67,7 @@ enum NetworkClientHelpers {
             }
 
         default:
-            return .genericError(error)
+            return .genericError("Unknown error occurred: \(error.localizedDescription)")
         }
     }
 }

@@ -14,7 +14,7 @@ extension ExercismClient {
     /// - Throws: `ExercismClientError` if the request fails.
     public func solutions(for track: String? = nil,
                           withStatus status: SolutionStatus? = nil,
-                          mentoringStatus: MentoringStatus? = nil) async throws -> ListResponse<Solution> {
+                          mentoringStatus: MentoringStatus? = nil) async throws(ExercismClientError) -> ListResponse<Solution> {
         var params: [String: String] = [:]
         if let t = track {
             params["track_slug"] = t
@@ -38,7 +38,7 @@ extension ExercismClient {
     /// - Parameter solutionId: The unique identifier of the solution.
     /// - Returns: The initial files associated with the solution.
     /// - Throws: `ExercismClientError` if the request fails.
-    public func initialSolution(for solutionId: String) async throws -> InitialFiles {
+    public func initialSolution(for solutionId: String) async throws(ExercismClientError) -> InitialFiles {
         try await networkClient.get(from: urlBuilder.url(for: .initialFiles,
                                                          urlArgs: solutionId),
                                     headers: headers())
@@ -82,7 +82,7 @@ extension ExercismClient {
     /// - Parameter solutionId: The unique identifier of the solution.
     /// - Returns: An `IterationResponse` containing the iteration details.
     /// - Throws: `ExercismClientError` if the request fails.
-    public func getIterations(for solutionId: String) async throws -> IterationResponse {
+    public func getIterations(for solutionId: String) async throws(ExercismClientError) -> IterationResponse {
         try await networkClient.get(from: urlBuilder.url(for: .iteration,
                                                          urlArgs: solutionId),
                                     headers: headers())

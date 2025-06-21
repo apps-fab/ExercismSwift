@@ -1,7 +1,7 @@
 import Foundation
 
 public enum ExercismClientError: Error {
-    case genericError(Error)
+    case genericError(String)
     case apiError(code: ExercismErrorCode, type: String, message: String)
     case bodyEncodingError(Error)
     case decodingError(Error)
@@ -16,7 +16,7 @@ public enum ExercismClientError: Error {
     public var description: String {
         switch self {
         case .genericError(let underlyingError):
-            return "An error occurred: \(underlyingError.localizedDescription)"
+            return "An error occurred: \(underlyingError)"
         case .apiError(let code, let type, let message):
             return "API Error - Code: \(code.rawValue), Type: \(type), Message: \(message)"
         case .bodyEncodingError(let underlyingError):
