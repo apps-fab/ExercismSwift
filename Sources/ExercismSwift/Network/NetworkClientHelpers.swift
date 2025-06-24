@@ -2,7 +2,7 @@ import Foundation
 
 /// A helper utility for handling network errors in the Exercism API client.
 enum NetworkClientHelpers {
-
+    
     /// Parses the HTTP response and extracts an `ExercismClientError` if an error is detected.
     /// - If the response status code is between 400 and 502, it attempts to decode the error response and extract an error message.
     /// - If decoding fails, it returns a generic HTTP error with the response status code.
@@ -13,20 +13,19 @@ enum NetworkClientHelpers {
     ///   - response: The URL response received from the server.
     /// - Returns: An `ExercismClientError` if an error is detected, otherwise `nil`.
     static func extractError(data: Data?,
-                                     response: URLResponse?) -> ExercismClientError {
+                             response: URLResponse?) -> ExercismClientError {
         guard let response = response as? HTTPURLResponse else {
             return .unsupportedResponseError
         }
         
         if (400..<503).contains(response.statusCode) {
-            if let data = data , let err = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
-                    return .apiError(code: ExercismErrorCode(rawValue: err.error.type) ?? .genericError,
-                                     type: err.error.type,
-                                     message: err.error.message)
+            if let data = data, let err = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
+                return .apiError(code: ExercismErrorCode(rawValue: err.error.type) ?? .genericError,
+                                 type: err.error.type,
+                                 message: err.error.message)
             }
         }
-        
-        return .genericError("Unknown error occurred")
+        return .unsupportedResponseError
     }
     
     /// Maps a generic `Error` to a specific `ExercismClientError` with detailed handling for known error types.
@@ -48,10 +47,10 @@ enum NetworkClientHelpers {
         switch error {
         case let decodingError as DecodingError:
             return .decodingError(decodingError)
-
+            
         case let encodingError as EncodingError:
             return .bodyEncodingError(encodingError)
-
+            
         case let urlError as URLError:
             switch urlError.code {
             case .notConnectedToInternet:
@@ -65,9 +64,9 @@ enum NetworkClientHelpers {
             default:
                 return .invalidRequestURL(urlError.code)
             }
-
+            
         default:
-            return .genericError("Unknown error occurred: \(error.localizedDescription)")
+            return .genericError("\(error.localizedDescription)")
         }
     }
 }

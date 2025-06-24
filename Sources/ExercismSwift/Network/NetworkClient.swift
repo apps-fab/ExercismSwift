@@ -259,7 +259,6 @@ class DefaultNetworkClient: NetworkClient {
             return destPath
         } catch {
             throw NetworkClientHelpers.extractError(error: error)
-
         }
     }
     
@@ -320,6 +319,8 @@ class DefaultNetworkClient: NetworkClient {
             DebugEnvironment.log.trace(String(data: data, encoding: .utf8) ?? "")
             let result = try self.decoder.decode(T.self, from: data)
             return result
+        } catch let error as ExercismClientError {
+            throw error
         } catch {
             throw NetworkClientHelpers.extractError(error: error)
         }
