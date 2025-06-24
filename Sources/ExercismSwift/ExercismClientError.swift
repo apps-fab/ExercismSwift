@@ -2,7 +2,7 @@ import Foundation
 
 public enum ExercismClientError: Error {
     case genericError(String)
-    case apiError(code: ExercismErrorCode, type: String, message: String)
+    case apiError(type: String, message: String)
     case bodyEncodingError(Error)
     case decodingError(Error)
     case unsupportedResponseError
@@ -17,7 +17,7 @@ public enum ExercismClientError: Error {
         switch self {
         case .genericError(let underlyingError):
             return "An error occurred: \(underlyingError)"
-        case .apiError(let code, let type, let message):
+        case .apiError(let type, let message):
             return """
             Error Type: \(type)
             Message: \(message)
@@ -44,7 +44,7 @@ public enum ExercismClientError: Error {
     }
 }
 
-public enum ExercismErrorCode: String {
+enum ExercismErrorCode: String {
     case invalidJson = "invalid_json"
     case invalidRequestURL = "invalid_request_url"
     case invalidRequest = "invalid_request"

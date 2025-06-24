@@ -30,7 +30,7 @@ extension ExercismClient {
         
         return try await networkClient.get(from: urlBuilder.url(for: .solutions,
                                                                 params: params),
-                                           headers: headers())
+                                           headers: headers)
     }
     
     /// Fetches the initial solution files for a given solution ID to allow reverting the exercise to its original state.
@@ -41,7 +41,7 @@ extension ExercismClient {
     public func initialSolution(for solutionId: String) async throws(ExercismClientError) -> InitialFiles {
         try await networkClient.get(from: urlBuilder.url(for: .initialFiles,
                                                          urlArgs: solutionId),
-                                    headers: headers())
+                                    headers: headers)
     }
     
     /// Downloads the solution files for a given exercise and returns an `ExerciseDocument`.
@@ -64,7 +64,7 @@ extension ExercismClient {
                                                                                 urlBuilder.url(for: .solutionsFile,
                                                                                                params: params,
                                                                                                urlArgs: id),
-                                                                             headers: headers())
+                                                                             headers: headers)
         let solutionManager = SolutionManager(with: solutionResponse.solution, client: self.networkClient)
         
         let directoryURL: URL = try await solutionManager.download()
@@ -85,6 +85,6 @@ extension ExercismClient {
     public func getIterations(for solutionId: String) async throws(ExercismClientError) -> IterationResponse {
         try await networkClient.get(from: urlBuilder.url(for: .iteration,
                                                          urlArgs: solutionId),
-                                    headers: headers())
+                                    headers: headers)
     }
 }

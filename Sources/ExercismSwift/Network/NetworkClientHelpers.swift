@@ -20,8 +20,7 @@ enum NetworkClientHelpers {
         
         if (400..<503).contains(response.statusCode) {
             if let data = data, let err = try? JSONDecoder().decode(ErrorResponse.self, from: data) {
-                return .apiError(code: ExercismErrorCode(rawValue: err.error.type) ?? .genericError,
-                                 type: err.error.type,
+                return .apiError(type: err.error.type,
                                  message: err.error.message)
             }
         }

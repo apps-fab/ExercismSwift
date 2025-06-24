@@ -4,7 +4,7 @@
 
 import Foundation
 
-public struct ListMeta: Decodable {
+struct ListMeta: Decodable {
     public let currentPage: Int
     public let totalCount: Int
     public let totalPages: Int

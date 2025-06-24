@@ -19,7 +19,7 @@ extension ExercismClient {
         return try await networkClient.post(to: urlBuilder.url(for: .testSubmission,
                                                                urlArgs: solution),
                                             body: files,
-                                            headers: headers())
+                                            headers: headers)
     }
     
     /// Retrieves the test run status.
@@ -31,7 +31,7 @@ extension ExercismClient {
         guard let url = URL(string: link) else {
             throw ExercismClientError.builderError(message: "Invalid URL")
         }
-        return try await networkClient.get(from: url, headers: headers())
+        return try await networkClient.get(from: url, headers: headers)
     }
     
     /// Cancels an ongoing test run.
@@ -43,7 +43,7 @@ extension ExercismClient {
         guard let url = URL(string: link) else {
             throw ExercismClientError.builderError(message: "Invalid URL")
         }
-        return try await networkClient.get(from: url, headers: headers())
+        return try await networkClient.get(from: url, headers: headers)
     }
     
     /// Submits a solution for review after successfully running and passing all tests.
@@ -55,14 +55,14 @@ extension ExercismClient {
         guard let url = URL(string: link) else {
             throw ExercismClientError.builderError(message: "Invalid URL")
         }
-        return try await networkClient.post(to: url, body: "", headers: headers())
+        return try await networkClient.post(to: url, body: "", headers: headers)
     }
     
     /// Marks a solution as complete, optionally publishing it and specifying an iteration.
     ///
     /// - Parameters:
     ///   - solution: The identifier of the solution to be completed.
-    ///   - publish: A boolean indicating whether to publish the solution (default is `false`).
+    ///   - publish: A boolean indicating whether to publish the solution (defaults to `false`).
     ///   - iteration: An optional iteration number to complete, if applicable.
     /// - Returns: A `CompletedSolution` indicating the result of the completion action.
     /// - Throws: An `ExercismClientError` if the request or decoding fails.
@@ -73,7 +73,7 @@ extension ExercismClient {
         return try await networkClient.patch(to: urlBuilder.url(for: .completeSolution,
                                                                 urlArgs: solution),
                                              body: payload,
-                                             headers: headers())
+                                             headers: headers)
     }
 }
 

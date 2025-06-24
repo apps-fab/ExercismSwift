@@ -11,7 +11,9 @@ public final class ExercismClient: ExercismClientType {
     
     /// The URL builder used to construct API request URLs.
     let urlBuilder = URLBuilder()
-    
+
+    var headers: Network.HTTPHeaders = [:]
+
     /// Initializes the client with an API token and an optional network client.
     /// - Parameters:
     ///   - apiToken: The API token for authentication.
@@ -26,11 +28,5 @@ public final class ExercismClient: ExercismClientType {
     /// - Parameter networkClient: An optional network client. If `nil`, a `DefaultNetworkClient` is used.
     public init(networkClient: NetworkClient? = nil) {
         self.networkClient = networkClient ?? DefaultNetworkClient(apiToken)
-    }
-    
-    /// Returns the default HTTP headers used for network requests.
-    /// - Returns: A dictionary of HTTP headers.
-    func headers() -> Network.HTTPHeaders {
-        [:]
     }
 }

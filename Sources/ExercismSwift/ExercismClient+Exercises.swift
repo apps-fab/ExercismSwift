@@ -10,6 +10,6 @@ extension ExercismClient {
     /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
     public func exercises(for track: String) async throws(ExercismClientError) -> ListResponse<Exercise> {
         try await networkClient.get(from: urlBuilder.url(for: .exercises, urlArgs: track),
-                                    headers: headers())
+                                    headers: headers)
     }
 }

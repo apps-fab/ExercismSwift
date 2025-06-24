@@ -17,6 +17,6 @@ extension ExercismClient {
     public func badges() async throws(ExercismClientError) -> ListResponse<Badge> {
         try await networkClient.get(from: urlBuilder.url(for: ExercismClientPath.badges,
                                                          params: [:]),
-                                    headers: headers())
+                                    headers: headers)
     }
 }
