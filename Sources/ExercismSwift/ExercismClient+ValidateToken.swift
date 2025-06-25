@@ -5,11 +5,10 @@ import Foundation
 extension ExercismClient {
     /// Validates the user's authentication token.
     ///
-    /// - Parameter completed: A completion handler returning a `Result` with either a `ValidateTokenResponse` on success or an `ExercismClientError` on failure.
-    public func validateToken(completed: @escaping (Result<ValidateTokenResponse,
-                                                    ExercismClientError>) -> Void) {
-        networkClient.get(from: urlBuilder.url(for: .validateToken),
-                          headers: headers(),
-                          completed: completed)
+    /// - Returns: A `ValidateTokenResponse` indicating whether the token is valid.
+    /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
+    public func validateToken() async throws(ExercismClientError) -> ValidateTokenResponse {
+        try await networkClient.get(from: urlBuilder.url(for: .validateToken),
+                                    headers: headers)
     }
 }

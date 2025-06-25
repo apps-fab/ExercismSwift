@@ -5,11 +5,9 @@ import Foundation
 extension ExercismClient {
     /// Fetches a list of available tracks.
     ///
-    /// - Parameter completed: A completion handler returning a `Result` with either a `ListResponse<Track>` on success or an `ExercismClientError` on failure.
-    public func tracks(completed: @escaping (Result<ListResponse<Track>,
-                                             ExercismClientError>) -> Void) {
-        networkClient.get(from: urlBuilder.url(for: .tracks),
-                          headers: headers(),
-                          completed: completed)
+    /// - Returns: An array of `Track` objects available to the user.
+    /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
+    public func tracks() async throws(ExercismClientError) -> ListResponse<Track> {
+        try await networkClient.get(from: urlBuilder.url(for: .tracks), headers: headers)
     }
 }

@@ -12,12 +12,11 @@ import Foundation
 extension ExercismClient {
     /// Fetches the list of badges earned by the user.
     ///
-    /// - Parameter completed: A completion handler that returns a `Result` containing either a `ListResponse<Exercise>` with the earned badges or an `ExercismClientError` if the request fails.
-    public func badges(completed: @escaping (Result<ListResponse<Badge>,
-                                             ExercismClientError>) -> Void) {
-        networkClient.get(from: urlBuilder.url(for: ExercismClientPath.badges,
-                                               params: [:]),
-                          headers: headers(),
-                          completed: completed)
+    /// - Returns: A `ListResponse<Badge>` containing the earned badges.
+    /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
+    public func badges() async throws(ExercismClientError) -> ListResponse<Badge> {
+        try await networkClient.get(from: urlBuilder.url(for: ExercismClientPath.badges,
+                                                         params: [:]),
+                                    headers: headers)
     }
 }

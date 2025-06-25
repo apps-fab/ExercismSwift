@@ -11,81 +11,69 @@ extension ExercismClient {
     /// - Parameters:
     ///   - solution: The identifier of the solution to be tested.
     ///   - contents: A list of `SolutionFileData` representing the file contents used for testing.
-    ///   - completed: A completion handler returning a `Result` with either a `TestSubmission` on success or an `ExercismClientError` on failure.
+    /// - Returns: A `TestSubmission` result from the test run.
+    /// - Throws: An `ExercismClientError` if the request or decoding fails.
     public func runTest(for solution: String,
-                        with contents: [SolutionFileData],
-                        completed: @escaping (Result<TestSubmission, ExercismClientError>) -> Void) {
+                        with contents: [SolutionFileData]) async throws(ExercismClientError) -> TestSubmission {
         let files = SolutionTestFiles(files: contents)
-        networkClient.post(to: urlBuilder.url(for: .testSubmission, urlArgs: solution),
-                           body: files,
-                           headers: headers(),
-                           completed: completed)
+        return try await networkClient.post(to: urlBuilder.url(for: .testSubmission,
+                                                               urlArgs: solution),
+                                            body: files,
+                                            headers: headers)
     }
     
-    /// Retrieves the `TestRunResponse`
+    /// Retrieves the test run status.
     ///
-    /// - Parameters:
-    ///   - link: The URL link to fetch the test run status.
-    ///   - completed: A completion handler returning a `Result` with either a `TestRunResponse` on success or an `ExercismClientError` on failure.
-    public func getTestRun(withLink link: String,
-                           completed: @escaping (Result<TestRunResponse,
-                                                 ExercismClientError>) -> Void) {
-        networkClient.get(from: URL(string: link)!,
-                          headers: headers(),
-                          completed: completed)
+    /// - Parameter link: The URL link to fetch the test run status.
+    /// - Returns: A `TestRunResponse` representing the current status of the test run.
+    /// - Throws: An `ExercismClientError` if the request or decoding fails.
+    public func getTestRun(withLink link: String) async throws(ExercismClientError) -> TestRunResponse {
+        guard let url = URL(string: link) else {
+            throw ExercismClientError.builderError(message: "Invalid URL")
+        }
+        return try await networkClient.get(from: url, headers: headers)
     }
     
     /// Cancels an ongoing test run.
     ///
-    /// - Parameters:
-    ///   - link: The URL link to cancel the test run.
-    ///   - completed: A completion handler returning a `Result` with either a `TestSubmission` on success or an `ExercismClientError` on failure.
-    public func cancelTestRun(withLink link: String,
-                              completed: @escaping (Result<TestSubmission, ExercismClientError>) -> Void) {
-        networkClient.get(from: URL(string: link)!,
-                          headers: headers(),
-                          completed: completed)
+    /// - Parameter link: The URL link to cancel the test run.
+    /// - Returns: A `TestSubmission` representing the canceled test run.
+    /// - Throws: An `ExercismClientError` if the request or decoding fails.
+    public func cancelTestRun(withLink link: String) async throws(ExercismClientError) -> TestSubmission {
+        guard let url = URL(string: link) else {
+            throw ExercismClientError.builderError(message: "Invalid URL")
+        }
+        return try await networkClient.get(from: url, headers: headers)
     }
     
-    /// Submits a solution for review.
+    /// Submits a solution for review after successfully running and passing all tests.
     ///
-    /// This action is performed after successfully running and passing all tests.
-    ///
-    /// - Parameters:
-    ///   - link: The URL used to submit the solution.
-    ///   - completed: A completion handler returning a `Result` with either a `SubmitSolutionResponse` on success or an `ExercismClientError` on failure.
-    public func submitSolution(withLink link: String,
-        completed: @escaping (Result<SubmitSolutionResponse, ExercismClientError>) -> Void) {
-            guard let url = URL(string: link) else {
-                completed(.failure(.builderError(message: "Invalid URL")))
-                return
-            }
-            
-            networkClient.post(to: url,
-                body: "",
-                headers: headers(),
-                completed: completed
-            )
+    /// - Parameter link: The URL used to submit the solution.
+    /// - Returns: A `SubmitSolutionResponse` indicating the result of the submission.
+    /// - Throws: An `ExercismClientError` if the request or decoding fails.
+    public func submitSolution(withLink link: String) async throws(ExercismClientError) -> SubmitSolutionResponse {
+        guard let url = URL(string: link) else {
+            throw ExercismClientError.builderError(message: "Invalid URL")
         }
+        return try await networkClient.post(to: url, body: "", headers: headers)
+    }
     
     /// Marks a solution as complete, optionally publishing it and specifying an iteration.
     ///
-    /// This action is performed after submitting the solution and successfully passing all tests.
-    ///
     /// - Parameters:
     ///   - solution: The identifier of the solution to be completed.
-    ///   - publish: A boolean indicating whether to publish the solution (default is `false`).
+    ///   - publish: A boolean indicating whether to publish the solution (defaults to `false`).
     ///   - iteration: An optional iteration number to complete, if applicable.
-    ///   - completed: A completion handler returning a `Result` with either a `CompletedSolution` on success or an `ExercismClientError` on failure.
+    /// - Returns: A `CompletedSolution` indicating the result of the completion action.
+    /// - Throws: An `ExercismClientError` if the request or decoding fails.
     public func completeSolution(for solution: String,
                                  publish: Bool = false,
-                                 iteration: Int? = nil,
-                                 completed: @escaping (Result<CompletedSolution, ExercismClientError>) -> Void) {
+                                 iteration: Int? = nil) async throws(ExercismClientError) -> CompletedSolution {
         let payload = CompleteSolutionPayload(publish: publish, iteration: iteration)
-        networkClient.patch(to: urlBuilder.url(for: .completeSolution,
-                                               urlArgs: solution),
-                            body: payload,
-                            headers: headers(),
-                            completed: completed)
+        return try await networkClient.patch(to: urlBuilder.url(for: .completeSolution,
+                                                                urlArgs: solution),
+                                             body: payload,
+                                             headers: headers)
     }
 }
+

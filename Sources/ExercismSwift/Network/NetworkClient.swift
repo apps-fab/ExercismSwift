@@ -8,74 +8,59 @@ public enum Network {
     public enum HTTPMethod: String {
         case GET, POST, PUT, PATCH, DELETE
     }
-    
-    public enum Errors: Error {
-        case HTTPError(code: Int)
-        case genericError(Error)
-    }
 }
 
 /// A protocol defining a network client for making HTTP requests.
 ///
 /// Conforming types should implement methods for performing common HTTP operations such as GET, POST, PATCH, DELETE, and downloading files.
 public protocol NetworkClient: AnyObject {
-    
+
     /// A dictionary of HTTP headers that will be included in all requests.
     var headers: Network.HTTPHeaders { get }
-    
+
     /// Performs an HTTP GET request.
     /// - Parameters:
     ///   - url: The URL to send the request to.
     ///   - headers: Optional additional headers to include in the request.
-    ///   - completed: A closure returning a `Result` with a decoded response or an error.
-    func get<R: Decodable>(from url: URL,
-                           headers: Network.HTTPHeaders?,
-                           completed: @escaping (Result<R, ExercismClientError>) -> Void )
-    
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
+    func get<R: Decodable>(from url: URL, headers: Network.HTTPHeaders?) async throws(ExercismClientError) -> R
+
     /// Performs an HTTP POST request.
     /// - Parameters:
     ///   - url: The URL to send the request to.
     ///   - body: The request body, encoded as JSON.
     ///   - headers: Optional additional headers to include in the request.
-    ///   - completed: A closure returning a `Result` with a decoded response or an error.
-    func post<T: Encodable, R: Decodable>(to url: URL,
-                                          body: T,
-                                          headers: Network.HTTPHeaders?,
-                                          completed: @escaping (Result<R, ExercismClientError>) -> Void)
-    
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if encoding, network, or decoding fails.
+    func post<T: Encodable, R: Decodable>(to url: URL, body: T, headers: Network.HTTPHeaders?) async throws(ExercismClientError) -> R
+
     /// Performs an HTTP PATCH request.
     /// - Parameters:
     ///   - url: The URL to send the request to.
     ///   - body: The request body, encoded as JSON.
     ///   - headers: Optional additional headers to include in the request.
-    ///   - completed: A closure returning a `Result` with a decoded response or an error.
-    func patch<T: Encodable, R: Decodable>(to url: URL,
-                                           body: T,
-                                           headers: Network.HTTPHeaders?,
-                                           completed: @escaping (Result<R, ExercismClientError>) -> Void)
-    
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if encoding, network, or decoding fails.
+    func patch<T: Encodable, R: Decodable>(to url: URL, body: T, headers: Network.HTTPHeaders?) async throws(ExercismClientError) -> R
+
     /// Performs an HTTP DELETE request with a request body.
     /// - Parameters:
     ///   - url: The URL to send the request to.
     ///   - body: The request body, encoded as JSON.
     ///   - headers: Optional additional headers to include in the request.
-    ///   - completed: A closure returning a `Result` with a decoded response or an error.
-    func delete<T: Encodable, R: Decodable>(from url: URL,
-                                            body: T,
-                                            headers: Network.HTTPHeaders?,
-                                            completed: @escaping (Result<R, ExercismClientError>) -> Void)
-    
-    
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if encoding, network, or decoding fails.
+    func delete<T: Encodable, R: Decodable>(from url: URL, body: T, headers: Network.HTTPHeaders?) async throws(ExercismClientError) -> R
+
     /// Downloads a file from a given URL and saves it to a specified destination.
     /// - Parameters:
     ///   - sourcePath: The URL of the file to download.
     ///   - destPath: The local file URL where the downloaded file should be saved.
     ///   - headers: Optional additional headers to include in the request.
-    ///   - completed: A closure returning a `Result` with the local file URL or an error.
-    func download(from sourcePath: URL,
-                  to destPath: URL,
-                  headers: Network.HTTPHeaders?,
-                  completed: @escaping (Result<URL, ExercismClientError>) -> Void)
+    /// - Returns: The local file URL where the file was saved.
+    /// - Throws: An `ExercismClientError` if the download or file operation fails.
+    func download(from sourcePath: URL, to destPath: URL, headers: Network.HTTPHeaders?) async throws(ExercismClientError) -> URL
 }
 
 /// This is the  default implementation of a network client that handles HTTP requests and responses.
@@ -120,62 +105,78 @@ class DefaultNetworkClient: NetworkClient {
         defaultHeaders
     }
     
-    /// Performs a GET request to the specified URL.
+    /// Performs an HTTP GET request to the specified URL and decodes the response.
+    ///
+    /// This method:
+    /// - Constructs a GET request with optional custom headers.
+    /// - Sends the request asynchronously using `URLSession`.
+    /// - Validates the response and decodes it into the specified type `R`.
+    ///
     /// - Parameters:
-    ///   - url: The target URL for the request.
-    ///   - headers: Optional custom headers for the request.
-    ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
+    ///   - url: The target URL for the GET request.
+    ///   - headers: Optional headers to include in the request.
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if the request fails or decoding fails.
     func get<R: Decodable>(from url: URL,
-                           headers: Network.HTTPHeaders? = nil,
-                           completed: @escaping (Result<R, ExercismClientError>) -> Void) {
+                           headers: Network.HTTPHeaders? = nil) async throws(ExercismClientError) -> R {
         let request = buildRequest(method: .GET, url: url, headers: headers)
-        executeRequest(request: request, completed: completed)
+        return try await executeRequest(request: request)
     }
     
-    /// Performs a POST request with a request body.
+    /// Performs an HTTP POST request with a JSON-encoded request body and decodes the response.
+    ///
+    /// This method:
+    /// - Constructs a POST request with optional headers and an encoded body.
+    /// - Sends the request asynchronously using `URLSession`.
+    /// - Validates the response and decodes it into the specified type `R`.
+    ///
     /// - Parameters:
-    ///   - url: The target URL for the request.
-    ///   - body: The request body to be sent.
-    ///   - headers: Optional custom headers.
-    ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
+    ///   - url: The target URL for the POST request.
+    ///   - body: A value conforming to `Encodable` to be sent as the request body.
+    ///   - headers: Optional headers to include in the request.
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if encoding, network, or decoding fails.
     func post<T: Encodable, R: Decodable>(to url: URL,
                                           body: T,
-                                          headers: Network.HTTPHeaders? = nil,
-                                          completed: @escaping (Result<R, ExercismClientError>) -> Void) {
+                                          headers: Network.HTTPHeaders? = nil) async throws(ExercismClientError) -> R {
         var request = buildRequest(method: .POST, url: url, headers: headers)
         let requestBody: Data
         
         do {
             requestBody = try encoder.encode(body)
         } catch {
-            completed(.failure(.bodyEncodingError(error)))
-            return
+            throw NetworkClientHelpers.extractError(error: error)
         }
         DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
         request.httpBody = requestBody
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        executeRequest(request: request, completed: completed)
+        return try await executeRequest(request: request)
     }
     
-    /// Performs a PATCH request with a request body.
+    /// Performs an HTTP PATCH request with a JSON-encoded request body and decodes the response.
+    ///
+    /// This method:
+    /// - Constructs a PATCH request with optional headers and an encoded body.
+    /// - Sends the request asynchronously using `URLSession`.
+    /// - Validates the response and decodes it into the specified type `R`.
+    ///
     /// - Parameters:
-    ///   - url: The target URL for the request.
-    ///   - body: The request body to be sent.
-    ///   - headers: Optional custom headers.
-    ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
+    ///   - url: The target URL for the PATCH request.
+    ///   - body: A value conforming to `Encodable` to be sent as the request body.
+    ///   - headers: Optional headers to include in the request.
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if encoding, network, or decoding fails.
     func patch<T: Encodable, R: Decodable>(to url: URL,
                                            body: T,
-                                           headers: Network.HTTPHeaders? = nil,
-                                           completed: @escaping (Result<R, ExercismClientError>) -> Void) {
+                                           headers: Network.HTTPHeaders? = nil) async throws(ExercismClientError) -> R {
         var request = buildRequest(method: .PATCH, url: url, headers: headers)
         let requestBody: Data
-        
+
         do {
             requestBody = try encoder.encode(body)
         } catch {
-            completed(.failure(.bodyEncodingError(error)))
-            return
+            throw NetworkClientHelpers.extractError(error: error)
         }
         
         DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
@@ -183,85 +184,82 @@ class DefaultNetworkClient: NetworkClient {
         request.httpBody = requestBody
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        executeRequest(request: request, completed: completed)
+        return try await executeRequest(request: request)
     }
-    
-    /// Performs a DELETE request with an optional request body.
+
+    /// Performs an HTTP DELETE request with a JSON-encoded request body and decodes the response.
+    ///
+    /// This method:
+    /// - Constructs a DELETE request with the given URL, headers, and encoded body.
+    /// - Sends the request asynchronously using `URLSession`.
+    /// - Validates the response status code.
+    /// - Attempts to decode the response into the expected type `R`.
+    /// - Throws a mapped `ExercismClientError` on failure.
+    ///
     /// - Parameters:
-    ///   - url: The target URL for the request.
-    ///   - body: An optional request body to be sent.
-    ///   - headers: Optional custom headers.
-    ///   - completed: A completion handler returning a `Result` containing the decoded response or an error.
-    func delete<R: Decodable, T: Encodable>(from url: URL,
-                                            body: T,
-                                            headers: Network.HTTPHeaders? = nil,
-                                            completed: @escaping (Result<R, ExercismClientError>) -> Void) {
+    ///   - url: The endpoint to send the DELETE request to.
+    ///   - body: A value conforming to `Encodable` to be used as the request body.
+    ///   - headers: Optional headers to include in the request.
+    /// - Returns: A decoded response of type `R`.
+    /// - Throws: An `ExercismClientError` if encoding, network, or decoding fails.
+    func delete<R: Decodable, T: Encodable>(
+        from url: URL,
+        body: T,
+        headers: Network.HTTPHeaders? = nil) async throws(ExercismClientError) -> R {
         var request = buildRequest(method: .DELETE, url: url, headers: headers)
         let requestBody: Data
-        
+
         do {
             requestBody = try encoder.encode(body)
         } catch {
-            completed(.failure(.bodyEncodingError(error)))
-            return
+            throw NetworkClientHelpers.extractError(error: error)
         }
-        
-        DebugEnvironment.log.trace("BODY:\n " + String(data: requestBody, encoding: .utf8)!)
-        
+
+        DebugEnvironment.log.trace("BODY:\n " + (String(data: requestBody, encoding: .utf8) ?? ""))
         request.httpBody = requestBody
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
-        executeRequest(request: request, completed: completed)
+
+        return try await executeRequest(request: request)
     }
-    
-    /// Downloads a file from a specified URL and saves it to the given destination path.
+
+
+    /// Downloads a file from the specified URL and saves it to the given destination path.
     ///
-    /// - If successful, if the file exists locally, it is replaced; otherwise, it is created. The completion handler is updated with the destination path
+    /// This method:
+    /// - Constructs a GET request to download a file.
+    /// - Validates that the response status code is within the 2xx range.
+    /// - Saves the downloaded file to the destination URL, replacing it if it already exists.
+    /// - Returns the destination URL if successful.
+    /// - Throws a mapped `ExercismClientError` if the request or file operation fails.
+    ///
     /// - Parameters:
-    ///   - sourcePath: The URL to download the file from.
-    ///   - destPath: The destination URL where the file should be saved.
-    ///   - headers: Optional custom headers.
-    ///   - completed: A completion handler returning a `Result` containing the file URL or an error.
+    ///   - sourcePath: The URL from which to download the file.
+    ///   - destPath: The local destination URL to save the downloaded file.
+    ///   - headers: Optional headers to include in the request.
+    /// - Returns: The `URL` of the saved file.
+    /// - Throws: An `ExercismClientError` if the download or file handling fails.
     func download(from sourcePath: URL,
                   to destPath: URL,
-                  headers: Network.HTTPHeaders? = [:],
-                  completed: @escaping (Result<URL, ExercismClientError>) -> Void) {
+                  headers: Network.HTTPHeaders? = [:]) async throws(ExercismClientError) -> URL {
         let request = initRequest(url: sourcePath, headers: headers)
-        
-        let task = URLSession.shared.downloadTask(with: request) { tempURL, response, error in
-            if let error = NetworkClientHelpers.extractError(response: response, error: error) {
-                DispatchQueue.main.async {
-                    completed(.failure(error))
-                }
-                return
+
+        do {
+            let (tempURL, response) = try await URLSession.shared.download(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                throw NetworkClientHelpers.extractError(data: nil, response: response)
             }
-            
-            guard let tempURL = tempURL else {
-                DispatchQueue.main.async {
-                    completed(.failure(.unsupportedResponseError))
-                }
-                return
-            }
-            
+
             DebugEnvironment.log.trace("Downloaded file location: \(tempURL.description)")
-            
-            do {
-                if FileManager.default.fileExists(atPath: destPath.relativePath) {
-                    try FileManager.default.replaceItemAt(destPath, withItemAt: tempURL)
-                } else {
-                    try FileManager.default.moveItem(at: tempURL, to: destPath)
-                }
-                DispatchQueue.main.async {
-                    completed(.success(destPath))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completed(.failure(.genericError(error)))
-                }
+
+            if FileManager.default.fileExists(atPath: destPath.relativePath) {
+                _ = try FileManager.default.replaceItemAt(destPath, withItemAt: tempURL)
+            } else {
+                _ = try FileManager.default.moveItem(at: tempURL, to: destPath)
             }
+            return destPath
+        } catch {
+            throw NetworkClientHelpers.extractError(error: error)
         }
-        
-        task.resume()
     }
     
     /// Builds a URL request with the specified HTTP method and headers.
@@ -297,50 +295,34 @@ class DefaultNetworkClient: NetworkClient {
         return request
     }
     
-    /// Executes a network request, processes the response, and decodes it into the specified type.
+    /// Executes a network request asynchronously, validates the response, and decodes it into the specified type.
     ///
-    /// - The method sends an HTTP request using `URLSession.shared.dataTask(with:)`.
-    /// - It checks for errors using `NetworkClientHelpers.extractError(data:response:error:)` and returns a failure if an error is found.
-    /// - If the request succeeds and data is received, it attempts to decode the data into the specified type `T: Decodable`.
-    /// - If decoding fails, it captures and returns a `.decodingError` or a `.genericError`.
-    /// - The result is returned asynchronously on the main thread via the `completed` closure.
+    /// This method performs the following steps:
+    /// - Sends an HTTP request using `URLSession.shared.data(for:)`.
+    /// - Verifies that the HTTP response has a 2xx status code.
+    /// - If the response indicates an error (non-2xx status), it uses `NetworkClientHelpers.extractError(data:response:)` to extract a meaningful `ExercismClientError`.
+    /// - Attempts to decode the received data into the specified `Decodable` type `T`.
+    /// - If decoding fails, it maps the thrown error using `NetworkClientHelpers.extractError(error:)`.
     ///
     /// - Parameters:
     ///   - request: The `URLRequest` to be executed.
-    ///   - completed: A completion handler returning a `Result<T, ExercismClientError>`,
-    ///     where `T` is the expected response type if decoding succeeds, or an error otherwise.
-    private func executeRequest<T: Decodable>(request: URLRequest,
-                                              completed: @escaping (Result<T, ExercismClientError>) -> Void) {
+    /// - Returns: A decoded object of type `T`.
+    /// - Throws: An `ExercismClientError` if the request fails, the response is invalid, or decoding fails.
+    private func executeRequest<T: Decodable>(request: URLRequest) async throws(ExercismClientError) -> T {
         DebugEnvironment.log.debug("Request: \(request.httpMethod ?? "") \(request.url?.absoluteString ?? "")")
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            var completeResult: Result<T, ExercismClientError>?
-            
-            if let error = NetworkClientHelpers.extractError(data: data, response: response, error: error) {
-                completeResult = .failure(error)
-            } else if let data = data {
-                DebugEnvironment.log.trace(String(data: data, encoding: .utf8) ?? "")
-                do {
-                    let result = try self.decoder.decode(T.self, from: data)
-                    completeResult = .success(result)
-                } catch let decodingError as Swift.DecodingError {
-                    completeResult = .failure(.decodingError(decodingError))
-                } catch {
-                    completeResult = .failure(.genericError(error))
-                }
-            } else {
-                completeResult = .failure(.unsupportedResponseError)
+
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard let httpResponse = response as? HTTPURLResponse, (200...299).contains(httpResponse.statusCode) else {
+                throw NetworkClientHelpers.extractError(data: data, response: response)
             }
-            
-            DispatchQueue.main.async {
-                guard let completeResult = completeResult else {
-                    fatalError("Unexpected state: No result available!")
-                }
-                completed(completeResult)
-            }
+            DebugEnvironment.log.trace(String(data: data, encoding: .utf8) ?? "")
+            let result = try self.decoder.decode(T.self, from: data)
+            return result
+        } catch let error as ExercismClientError {
+            throw error
+        } catch {
+            throw NetworkClientHelpers.extractError(error: error)
         }
-        
-        task.resume()
     }
-    
 }
